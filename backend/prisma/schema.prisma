@@ -1,0 +1,643 @@
+// GESTIONAR2 - Prisma Schema
+// PostgreSQL + multiusuario + soft delete + auditoría
+
+enum WorkspaceType {
+  PERSONAL
+  BUSINESS
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum TransactionType {
+  EXPENSE  // Gasto
+  INCOME   // Ingreso
+}
+
+enum CategoryType {
+  EXPENSE  // Solo gastos
+  INCOME   // Solo ingresos
+  MIXED    // Ambos
+}
+
+enum PaymentMethod {
+  CASH         // Efectivo
+  BANK_TRANSFER // Transferencia
+  CARD         // Tarjeta
+  CHECK        // Cheque
+  OTHER        // Otro
+}
+
+enum TransactionStatus {
+  PENDING    // Pendiente
+  CONFIRMED  // Confirmado
+  CANCELLED  // Cancelado
+}
+
+enum NotificationType {
+  DAILY_SUMMARY
+  WEEKLY_SUMMARY
+  EXPENSE_ALERT
+  INCOME_ALERT
+  AI_INSIGHT
+  MONTHLY_SUMMARY
+  CATEGORY_LIMIT_ALERT
+  RECURRING_REMINDER
+}
+
+enum RecurrenceFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum WorkspaceMemberRole {
+  OWNER
+  ADMIN
+  ACCOUNTANT
+  PARTNER
+  VIEWER
+}
+
+enum Currency {
+  ARS
+  USD
+  EUR
+  BRL
+  CLP
+  COP
+  MXN
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// USERS
+// ==========================================
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String
+  passwordHash      String
+  role              UserRole  @default(USER)
+  avatarUrl         String?
+  isActive          Boolean   @default(true)
+
+  // Telegram
+  telegramId        String?   @unique
+  telegramUsername  String?
+  telegramLinkedAt  DateTime?
+
+  // Preferences
+  preferences       Json      @default("{}")
+
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+  lastLoginAt       DateTime?
+
+  // Relations
+  telegramSessions      TelegramSession[]
+  notifications         Notification[]
+  reports               Report[]
+  refreshTokens         RefreshToken[]
+  passwordResetTokens   PasswordResetToken[]
+  workspaces            Workspace[]
+  workspaceMembers      WorkspaceMember[]
+  argInvoices           ArgInvoice[]
+  argClients            ArgClient[]
+  createdTransactions   Transaction[]
+
+  @@index([email])
+  @@index([telegramId])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revokedAt DateTime?
+
+  @@index([token])
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+// ==========================================
+// CATEGORIES
+// ==========================================
+
+model Category {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  icon        String   @default("tag")
+  color       String   @default("#385144")
+  type        CategoryType @default(MIXED)
+  description String?
+  isActive    Boolean  @default(true)
+  isFavorite  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  limits       CategoryLimit[]
+  recurringTransactions RecurringTransaction[]
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId, isActive])
+  @@index([workspaceId, isFavorite])
+  @@index([deletedAt])
+  @@map("categories")
+}
+
+// ==========================================
+// TRANSACTIONS
+// ==========================================
+
+model Transaction {
+  id          String            @id @default(cuid())
+  workspaceId String
+  categoryId  String?
+  type        TransactionType
+  amount      Decimal @db.Decimal(15, 2)
+  currency    Currency @default(ARS)
+  description String?
+  notes       String?
+  date        DateTime @db.Date
+  paymentMethod PaymentMethod @default(CASH)
+  status      TransactionStatus @default(CONFIRMED)
+
+  // Origen del registro
+  source        String @default("web") // "web", "telegram", "api"
+  telegramMsgId String?
+
+  // Para vincular con facturas en modo Empresa
+  invoiceId     String?
+
+  // Para vincular con metas de ahorro
+  goalId        String?
+
+  // Para vincular con movimientos recurrentes
+  recurringTransactionId String?
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // Auditoría: quién creó el movimiento
+  createdById String?
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  goal        Goal? @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  recurringTransaction RecurringTransaction? @relation(fields: [recurringTransactionId], references: [id], onDelete: SetNull)
+  createdBy   User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, type])
+  @@index([workspaceId, date])
+  @@index([workspaceId, categoryId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, createdById])
+  @@index([date])
+  @@index([deletedAt])
+  @@map("transactions")
+}
+
+// ==========================================
+// TELEGRAM SESSIONS
+// ==========================================
+
+model TelegramSession {
+  id          String   @id @default(cuid())
+  userId      String
+  telegramId  String   @unique
+  sessionData Json     @default("{}")
+  state       String   @default("idle")
+  lastMessage String?
+  lastActivity DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([telegramId])
+  @@index([userId])
+  @@map("telegram_sessions")
+}
+
+// ==========================================
+// NOTIFICATIONS
+// ==========================================
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json             @default("{}")
+  isRead    Boolean          @default(false)
+  sentAt    DateTime?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+// ==========================================
+// REPORTS
+// ==========================================
+
+model Report {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  type        String   // "expenses", "income", "overview", "profitability"
+  format      String   // "pdf", "csv", "excel"
+  filters     Json     @default("{}")
+  fileUrl     String?
+  status      String   @default("pending") // "pending", "processing", "ready", "failed"
+  generatedAt DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([userId, createdAt])
+  @@map("reports")
+}
+
+model Client {
+  id      String @id @default(cuid())
+  name    String
+  cuit    String?
+  email   String?
+  phone   String?
+  address String?
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  invoices Invoice[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([workspaceId])
+  @@map("clients")
+}
+
+model Invoice {
+  id            String    @id @default(cuid())
+  invoiceNumber String
+  issueDate     DateTime
+  dueDate       DateTime
+  totalAmount   Float
+  status        String // Ej: PENDING, PAID, OVERDUE, CANCELLED
+  urlArchivo    String?
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  transactions Transaction[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([workspaceId])
+  @@index([clientId])
+  @@map("invoices")
+}
+
+model ArgInvoice {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  clienteId           String?
+  cliente             ArgClient? @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+
+  nroFactura          String
+  tipo                String
+  fechaEmision        DateTime
+  fechaVencimiento    DateTime?
+  subtotal            Decimal?  @db.Decimal(15, 2)
+  iva                 Decimal?  @db.Decimal(15, 2)
+  importeTotal        Decimal   @db.Decimal(15, 2)
+  condicionFiscal     String?
+  descripcion         String?
+  estadoPago          String    @default("pendiente")
+  urlArchivo          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([clienteId])
+  @@map("arg_invoices")
+}
+
+model ArgClient {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cuit          String
+  razonSocial   String
+  email         String?
+  telefono      String?
+  direccion     String?
+
+  facturas      ArgInvoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([cuit])
+  @@map("arg_clients")
+}
+
+model Goal {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  targetAmount Decimal @db.Decimal(15, 2)
+  currentAmount Decimal @db.Decimal(15, 2) @default(0)
+  category    String?  // "savings", "vacation", "car", "home", "emergency", etc.
+  targetDate  DateTime?
+  isCompleted Boolean  @default(false)
+  isActive    Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  @@index([workspaceId, isActive])
+  @@index([deletedAt])
+  @@map("goals")
+}
+
+// ==========================================
+// WORKSPACES
+// ==========================================
+
+model Workspace {
+  id   String        @id @default(cuid())
+  name String
+  type WorkspaceType @default(PERSONAL)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+  categories   Category[]
+  clients      Client[]
+  invoices     Invoice[]
+  goals        Goal[]
+  members      WorkspaceMember[]
+  recurringTransactions RecurringTransaction[]
+  categoryLimits CategoryLimit[]
+  invitations  Invitation[]
+
+  enabledFeatures String[] @default(["transactions", "categories", "clients", "invoices"])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([deletedAt])
+  @@map("workspaces")
+}
+
+// ==========================================
+// WORKSPACE MEMBERS (Roles empresariales)
+// ==========================================
+
+model WorkspaceMember {
+  id          String            @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceMemberRole @default(VIEWER)
+  displayName String?
+  permissions Json              @default("{}")
+  invitedBy   String?
+  invitedAt   DateTime          @default(now())
+  joinedAt    DateTime?
+  isActive    Boolean           @default(true)
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([deletedAt])
+  @@map("workspace_members")
+}
+
+// ==========================================
+// INVITATIONS (Claves de acceso)
+// ==========================================
+
+model Invitation {
+  id          String    @id @default(cuid())
+  workspaceId String
+  code        String    @unique
+  email       String?
+  role        WorkspaceMemberRole @default(VIEWER)
+  displayName String?
+  maxUses     Int       @default(1)
+  usesCount   Int       @default(0)
+  expiresAt   DateTime
+  createdBy   String
+  createdAt   DateTime @default(now())
+  usedAt      DateTime?
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([code])
+  @@index([workspaceId])
+  @@index([expiresAt])
+  @@map("invitations")
+}
+
+// ==========================================
+// RECURRING TRANSACTIONS (Movimientos recurrentes)
+// ==========================================
+
+model RecurringTransaction {
+  id          String              @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  type        TransactionType
+  amount      Decimal @db.Decimal(15, 2)
+  currency    Currency @default(ARS)
+  categoryId  String?
+  frequency   RecurrenceFrequency
+  dayOfMonth  Int? // 1-31 para mensual
+  dayOfWeek   Int? // 0-6 para semanal (0=Domingo)
+  startDate   DateTime @db.Date
+  endDate     DateTime? @db.Date
+  isActive    Boolean  @default(true)
+  lastGeneratedAt DateTime?
+  nextDueDate DateTime?
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  transactions Transaction[]
+
+  @@index([workspaceId, isActive])
+  @@index([nextDueDate])
+  @@index([deletedAt])
+  @@map("recurring_transactions")
+}
+
+// ==========================================
+// CATEGORY LIMITS (Límites por categoría)
+// ==========================================
+
+model CategoryLimit {
+  id          String    @id @default(cuid())
+  workspaceId String
+  categoryId  String
+  limitAmount Decimal @db.Decimal(15, 2)
+  period      String    @default("monthly") // "monthly", "yearly"
+  alertEnabled Boolean @default(true)
+  alertThreshold Decimal @db.Decimal(15, 2) @default(80) // Porcentaje de alerta (80% por defecto)
+  isActive    Boolean   @default(true)
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, categoryId, period])
+  @@index([workspaceId])
+  @@index([categoryId])
+  @@index([deletedAt])
+  @@map("category_limits")
+}
+
+// ==========================================
+// EXCHANGE RATES (Multimoneda)
+// ==========================================
+
+model ExchangeRate {
+  id          String    @id @default(cuid())
+  fromCurrency Currency
+  toCurrency   Currency
+  rate        Decimal @db.Decimal(15, 6)
+  date        DateTime @db.Date
+  source      String   @default("manual") // "api", "manual", "bcra"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([fromCurrency, toCurrency, date])
+  @@index([fromCurrency, toCurrency, date])
+  @@index([date])
+  @@map("exchange_rates")
+}
+
+// ==========================================
+// AI RECOMMENDATIONS
+// ==========================================
+
+model AIRecommendation {
+  id          String    @id @default(cuid())
+  userId      String
+  workspaceId String
+  type        String    // "saving", "spending", "investment", "alert"
+  title       String
+  message     String
+  priority    String    @default("medium") // "low", "medium", "high"
+  data        Json      @default("{}")
+  isRead      Boolean   @default(false)
+  isDismissed Boolean   @default(false)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  readAt      DateTime?
+
+  @@index([userId, isRead])
+  @@index([workspaceId, createdAt])
+  @@index([expiresAt])
+  @@map("ai_recommendations")
+}

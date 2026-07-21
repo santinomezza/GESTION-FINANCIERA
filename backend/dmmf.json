@@ -1,0 +1,2453 @@
+{
+  "datamodel": {
+    "models": [
+      {
+        "name": "User",
+        "dbName": "users",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "email",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": true,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "name",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "passwordHash",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "role",
+            "kind": "enum",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "UserRole",
+            "default": "USER",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "avatarUrl",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "isActive",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Boolean",
+            "default": true,
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "telegramId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": true,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "telegramUsername",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "telegramLinkedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "updatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": true
+          },
+          {
+            "name": "deletedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "lastLoginAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "telegramSessions",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "TelegramSession",
+            "relationName": "TelegramSessionToUser",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "notifications",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Notification",
+            "relationName": "NotificationToUser",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "reports",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Report",
+            "relationName": "ReportToUser",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "refreshTokens",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "RefreshToken",
+            "relationName": "RefreshTokenToUser",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspaces",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Workspace",
+            "relationName": "UserToWorkspace",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "RefreshToken",
+        "dbName": "refresh_tokens",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "token",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": true,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "userId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "user",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "User",
+            "relationName": "RefreshTokenToUser",
+            "relationFromFields": [
+              "userId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "expiresAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "revokedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "Category",
+        "dbName": "categories",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspaceId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "name",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "icon",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": "tag",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "color",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": "#385144",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "type",
+            "kind": "enum",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "CategoryType",
+            "default": "MIXED",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "description",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "isActive",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Boolean",
+            "default": true,
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "isFavorite",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Boolean",
+            "default": false,
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "sortOrder",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Int",
+            "default": 0,
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "updatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": true
+          },
+          {
+            "name": "deletedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspace",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Workspace",
+            "relationName": "CategoryToWorkspace",
+            "relationFromFields": [
+              "workspaceId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "transactions",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Transaction",
+            "relationName": "CategoryToTransaction",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [
+          [
+            "workspaceId",
+            "name"
+          ]
+        ],
+        "uniqueIndexes": [
+          {
+            "name": null,
+            "fields": [
+              "workspaceId",
+              "name"
+            ]
+          }
+        ],
+        "isGenerated": false
+      },
+      {
+        "name": "Transaction",
+        "dbName": "transactions",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspaceId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "categoryId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "type",
+            "kind": "enum",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "TransactionType",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "amount",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Decimal",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "description",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "notes",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "date",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "paymentMethod",
+            "kind": "enum",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "PaymentMethod",
+            "default": "CASH",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "status",
+            "kind": "enum",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "TransactionStatus",
+            "default": "CONFIRMED",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "source",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": "web",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "telegramMsgId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "invoiceId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "goalId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "updatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": true
+          },
+          {
+            "name": "deletedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspace",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Workspace",
+            "relationName": "TransactionToWorkspace",
+            "relationFromFields": [
+              "workspaceId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "category",
+            "kind": "object",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Category",
+            "relationName": "CategoryToTransaction",
+            "relationFromFields": [
+              "categoryId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "SetNull",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "invoice",
+            "kind": "object",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Invoice",
+            "relationName": "InvoiceToTransaction",
+            "relationFromFields": [
+              "invoiceId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "SetNull",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "goal",
+            "kind": "object",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Goal",
+            "relationName": "GoalToTransaction",
+            "relationFromFields": [
+              "goalId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "SetNull",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "TelegramSession",
+        "dbName": "telegram_sessions",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "userId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "telegramId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": true,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "sessionData",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Json",
+            "default": "{}",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "state",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": "idle",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "lastMessage",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "lastActivity",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "updatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": true
+          },
+          {
+            "name": "user",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "User",
+            "relationName": "TelegramSessionToUser",
+            "relationFromFields": [
+              "userId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "Notification",
+        "dbName": "notifications",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "userId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "type",
+            "kind": "enum",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "NotificationType",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "title",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "message",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "data",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Json",
+            "default": "{}",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "isRead",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Boolean",
+            "default": false,
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "sentAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "readAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "user",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "User",
+            "relationName": "NotificationToUser",
+            "relationFromFields": [
+              "userId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "Report",
+        "dbName": "reports",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "userId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "name",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "type",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "format",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "filters",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Json",
+            "default": "{}",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "fileUrl",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "status",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": "pending",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "generatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "expiresAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "user",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "User",
+            "relationName": "ReportToUser",
+            "relationFromFields": [
+              "userId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "Client",
+        "dbName": "clients",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "name",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "cuit",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "email",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "phone",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "address",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspaceId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspace",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Workspace",
+            "relationName": "ClientToWorkspace",
+            "relationFromFields": [
+              "workspaceId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "invoices",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Invoice",
+            "relationName": "ClientToInvoice",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "updatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": true
+          },
+          {
+            "name": "deletedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "Invoice",
+        "dbName": "invoices",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "invoiceNumber",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "issueDate",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "dueDate",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "totalAmount",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Float",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "status",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspaceId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspace",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Workspace",
+            "relationName": "InvoiceToWorkspace",
+            "relationFromFields": [
+              "workspaceId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "clientId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "client",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Client",
+            "relationName": "ClientToInvoice",
+            "relationFromFields": [
+              "clientId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "transactions",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Transaction",
+            "relationName": "InvoiceToTransaction",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "updatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": true
+          },
+          {
+            "name": "deletedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "Goal",
+        "dbName": "goals",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspaceId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "name",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "description",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "targetAmount",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Decimal",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "currentAmount",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Decimal",
+            "default": 0,
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "category",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "targetDate",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "isCompleted",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Boolean",
+            "default": false,
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "isActive",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "Boolean",
+            "default": true,
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "updatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": true
+          },
+          {
+            "name": "deletedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": false,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "workspace",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Workspace",
+            "relationName": "GoalToWorkspace",
+            "relationFromFields": [
+              "workspaceId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "transactions",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Transaction",
+            "relationName": "GoalToTransaction",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      },
+      {
+        "name": "Workspace",
+        "dbName": "workspaces",
+        "fields": [
+          {
+            "name": "id",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": true,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "String",
+            "default": {
+              "name": "cuid",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "name",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "type",
+            "kind": "enum",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "WorkspaceType",
+            "default": "PERSONAL",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "userId",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": true,
+            "hasDefaultValue": false,
+            "type": "String",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "user",
+            "kind": "object",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "User",
+            "relationName": "UserToWorkspace",
+            "relationFromFields": [
+              "userId"
+            ],
+            "relationToFields": [
+              "id"
+            ],
+            "relationOnDelete": "Cascade",
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "transactions",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Transaction",
+            "relationName": "TransactionToWorkspace",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "categories",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Category",
+            "relationName": "CategoryToWorkspace",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "clients",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Client",
+            "relationName": "ClientToWorkspace",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "invoices",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Invoice",
+            "relationName": "InvoiceToWorkspace",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "goals",
+            "kind": "object",
+            "isList": true,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "Goal",
+            "relationName": "GoalToWorkspace",
+            "relationFromFields": [],
+            "relationToFields": [],
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "createdAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": true,
+            "type": "DateTime",
+            "default": {
+              "name": "now",
+              "args": []
+            },
+            "isGenerated": false,
+            "isUpdatedAt": false
+          },
+          {
+            "name": "updatedAt",
+            "kind": "scalar",
+            "isList": false,
+            "isRequired": true,
+            "isUnique": false,
+            "isId": false,
+            "isReadOnly": false,
+            "hasDefaultValue": false,
+            "type": "DateTime",
+            "isGenerated": false,
+            "isUpdatedAt": true
+          }
+        ],
+        "primaryKey": null,
+        "uniqueFields": [],
+        "uniqueIndexes": [],
+        "isGenerated": false
+      }
+    ],
+    "enums": [
+      {
+        "name": "WorkspaceType",
+        "values": [
+          {
+            "name": "PERSONAL",
+            "dbName": null
+          },
+          {
+            "name": "BUSINESS",
+            "dbName": null
+          }
+        ],
+        "dbName": null
+      },
+      {
+        "name": "UserRole",
+        "values": [
+          {
+            "name": "ADMIN",
+            "dbName": null
+          },
+          {
+            "name": "USER",
+            "dbName": null
+          }
+        ],
+        "dbName": null
+      },
+      {
+        "name": "TransactionType",
+        "values": [
+          {
+            "name": "EXPENSE",
+            "dbName": null
+          },
+          {
+            "name": "INCOME",
+            "dbName": null
+          }
+        ],
+        "dbName": null
+      },
+      {
+        "name": "CategoryType",
+        "values": [
+          {
+            "name": "EXPENSE",
+            "dbName": null
+          },
+          {
+            "name": "INCOME",
+            "dbName": null
+          },
+          {
+            "name": "MIXED",
+            "dbName": null
+          }
+        ],
+        "dbName": null
+      },
+      {
+        "name": "PaymentMethod",
+        "values": [
+          {
+            "name": "CASH",
+            "dbName": null
+          },
+          {
+            "name": "BANK_TRANSFER",
+            "dbName": null
+          },
+          {
+            "name": "CARD",
+            "dbName": null
+          },
+          {
+            "name": "CHECK",
+            "dbName": null
+          },
+          {
+            "name": "OTHER",
+            "dbName": null
+          }
+        ],
+        "dbName": null
+      },
+      {
+        "name": "TransactionStatus",
+        "values": [
+          {
+            "name": "PENDING",
+            "dbName": null
+          },
+          {
+            "name": "CONFIRMED",
+            "dbName": null
+          },
+          {
+            "name": "CANCELLED",
+            "dbName": null
+          }
+        ],
+        "dbName": null
+      },
+      {
+        "name": "NotificationType",
+        "values": [
+          {
+            "name": "DAILY_SUMMARY",
+            "dbName": null
+          },
+          {
+            "name": "WEEKLY_SUMMARY",
+            "dbName": null
+          },
+          {
+            "name": "EXPENSE_ALERT",
+            "dbName": null
+          },
+          {
+            "name": "INCOME_ALERT",
+            "dbName": null
+          },
+          {
+            "name": "AI_INSIGHT",
+            "dbName": null
+          }
+        ],
+        "dbName": null
+      }
+    ],
+    "types": []
+  }
+}

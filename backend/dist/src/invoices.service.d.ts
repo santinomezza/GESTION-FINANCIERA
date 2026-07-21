@@ -1,0 +1,144 @@
+import { PrismaService } from './common/prisma/prisma.service';
+import { CreateInvoiceDto } from './create-invoice.dto';
+import { UpdateInvoiceDto } from './update-invoice.dto';
+import { Prisma } from '@prisma/client';
+import { AiService } from './ai/ai.service';
+export declare class InvoicesService {
+    private prisma;
+    private aiService;
+    private readonly logger;
+    constructor(prisma: PrismaService, aiService: AiService);
+    create(workspaceId: string, createInvoiceDto: CreateInvoiceDto): Prisma.Prisma__InvoiceClient<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        workspaceId: string;
+        status: string;
+        invoiceNumber: string;
+        issueDate: Date;
+        dueDate: Date;
+        totalAmount: number;
+        urlArchivo: string | null;
+        clientId: string | null;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    findAll(workspaceId: string, clientId?: string): Prisma.PrismaPromise<({
+        client: {
+            id: string;
+            email: string | null;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            workspaceId: string;
+            cuit: string | null;
+            phone: string | null;
+            address: string | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        workspaceId: string;
+        status: string;
+        invoiceNumber: string;
+        issueDate: Date;
+        dueDate: Date;
+        totalAmount: number;
+        urlArchivo: string | null;
+        clientId: string | null;
+    })[]>;
+    findOne(workspaceId: string, id: string): Promise<{
+        transactions: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.TransactionType;
+            workspaceId: string;
+            description: string | null;
+            amount: Prisma.Decimal;
+            currency: import(".prisma/client").$Enums.Currency;
+            notes: string | null;
+            date: Date;
+            paymentMethod: import(".prisma/client").$Enums.PaymentMethod;
+            status: import(".prisma/client").$Enums.TransactionStatus;
+            source: string;
+            telegramMsgId: string | null;
+            categoryId: string | null;
+            invoiceId: string | null;
+            goalId: string | null;
+            recurringTransactionId: string | null;
+            createdById: string | null;
+        }[];
+        client: {
+            id: string;
+            email: string | null;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            workspaceId: string;
+            cuit: string | null;
+            phone: string | null;
+            address: string | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        workspaceId: string;
+        status: string;
+        invoiceNumber: string;
+        issueDate: Date;
+        dueDate: Date;
+        totalAmount: number;
+        urlArchivo: string | null;
+        clientId: string | null;
+    }>;
+    update(workspaceId: string, id: string, updateInvoiceDto: UpdateInvoiceDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        workspaceId: string;
+        status: string;
+        invoiceNumber: string;
+        issueDate: Date;
+        dueDate: Date;
+        totalAmount: number;
+        urlArchivo: string | null;
+        clientId: string | null;
+    }>;
+    remove(workspaceId: string, id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        workspaceId: string;
+        status: string;
+        invoiceNumber: string;
+        issueDate: Date;
+        dueDate: Date;
+        totalAmount: number;
+        urlArchivo: string | null;
+        clientId: string | null;
+    }>;
+    markAsPaid(workspaceId: string, id: string, paymentDate: Date): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        workspaceId: string;
+        status: string;
+        invoiceNumber: string;
+        issueDate: Date;
+        dueDate: Date;
+        totalAmount: number;
+        urlArchivo: string | null;
+        clientId: string | null;
+    }>;
+    extractInvoiceData(fileBuffer: Buffer, mimeType: string): Promise<import("./ai/ai.service").ExtractedInvoice>;
+}

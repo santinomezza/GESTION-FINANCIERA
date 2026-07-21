@@ -1,0 +1,1 @@
+{"version":3,"file":"mark-invoice-paid.dto.js","sourceRoot":"","sources":["../../src/mark-invoice-paid.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;;AAAA,6CAA8C;AAC9C,qDAA2D;AAE3D,MAAa,kBAAkB;;;;CAQ9B;AARD,gDAQC;AADG;IANC,IAAA,qBAAW,EAAC;QACT,WAAW,EAAE,mDAAmD;QAChE,OAAO,EAAE,0BAA0B;KACtC,CAAC;IACD,IAAA,8BAAY,GAAE;IACd,IAAA,4BAAU,GAAE;8BACA,IAAI;uDAAC"}

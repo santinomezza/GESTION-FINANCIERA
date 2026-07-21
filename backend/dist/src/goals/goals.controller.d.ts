@@ -1,0 +1,82 @@
+import { GoalsService } from './goals.service';
+import { CreateGoalDto, UpdateGoalDto } from './dto/create-goal.dto';
+export declare class GoalsController {
+    private readonly goalsService;
+    constructor(goalsService: GoalsService);
+    findAll(workspaceId: string): Promise<{
+        category: string | null;
+        id: string;
+        workspaceId: string;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        targetAmount: import("@prisma/client/runtime/library").Decimal;
+        currentAmount: import("@prisma/client/runtime/library").Decimal;
+        targetDate: Date | null;
+        isCompleted: boolean;
+    }[]>;
+    getStats(workspaceId: string): Promise<import("./goals.service").GoalStats>;
+    findOne(workspaceId: string, id: string): Promise<{
+        category: string | null;
+        id: string;
+        workspaceId: string;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        targetAmount: import("@prisma/client/runtime/library").Decimal;
+        currentAmount: import("@prisma/client/runtime/library").Decimal;
+        targetDate: Date | null;
+        isCompleted: boolean;
+    }>;
+    create(workspaceId: string, dto: CreateGoalDto): Promise<{
+        category: string | null;
+        id: string;
+        workspaceId: string;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        targetAmount: import("@prisma/client/runtime/library").Decimal;
+        currentAmount: import("@prisma/client/runtime/library").Decimal;
+        targetDate: Date | null;
+        isCompleted: boolean;
+    }>;
+    update(workspaceId: string, id: string, dto: UpdateGoalDto): Promise<{
+        category: string | null;
+        id: string;
+        workspaceId: string;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        targetAmount: import("@prisma/client/runtime/library").Decimal;
+        currentAmount: import("@prisma/client/runtime/library").Decimal;
+        targetDate: Date | null;
+        isCompleted: boolean;
+    }>;
+    remove(workspaceId: string, id: string): Promise<{
+        category: string | null;
+        id: string;
+        workspaceId: string;
+        name: string;
+        description: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        targetAmount: import("@prisma/client/runtime/library").Decimal;
+        currentAmount: import("@prisma/client/runtime/library").Decimal;
+        targetDate: Date | null;
+        isCompleted: boolean;
+    }>;
+}

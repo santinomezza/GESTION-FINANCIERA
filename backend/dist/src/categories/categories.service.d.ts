@@ -1,0 +1,82 @@
+import { PrismaService } from '../common/prisma/prisma.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+export declare class CategoriesService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    create(workspaceId: string, createCategoryDto: CreateCategoryDto): import(".prisma/client").Prisma.Prisma__CategoryClient<{
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.CategoryType;
+        workspaceId: string;
+        icon: string;
+        color: string;
+        description: string | null;
+        isFavorite: boolean;
+        sortOrder: number;
+    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    findAll(workspaceId: string): import(".prisma/client").Prisma.PrismaPromise<{
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.CategoryType;
+        workspaceId: string;
+        icon: string;
+        color: string;
+        description: string | null;
+        isFavorite: boolean;
+        sortOrder: number;
+    }[]>;
+    findOne(workspaceId: string, id: string): Promise<{
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.CategoryType;
+        workspaceId: string;
+        icon: string;
+        color: string;
+        description: string | null;
+        isFavorite: boolean;
+        sortOrder: number;
+    }>;
+    update(workspaceId: string, id: string, updateCategoryDto: UpdateCategoryDto): Promise<{
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.CategoryType;
+        workspaceId: string;
+        icon: string;
+        color: string;
+        description: string | null;
+        isFavorite: boolean;
+        sortOrder: number;
+    }>;
+    remove(workspaceId: string, id: string): Promise<{
+        id: string;
+        name: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.CategoryType;
+        workspaceId: string;
+        icon: string;
+        color: string;
+        description: string | null;
+        isFavorite: boolean;
+        sortOrder: number;
+    }>;
+}

@@ -1,0 +1,148 @@
+import { PrismaService } from '../common/prisma/prisma.service';
+import { AiService, ExtractedInvoice } from '../ai/ai.service';
+import { CreateManualInvoiceDto } from './dto/create-manual-invoice.dto';
+export declare class InvoicesArService {
+    private prisma;
+    private aiService;
+    private readonly logger;
+    private readonly uploadsDir;
+    constructor(prisma: PrismaService, aiService: AiService);
+    processInvoiceOCR(userId: string, fileBuffer: Buffer, originalName: string, mimeType: string): Promise<{
+        success: boolean;
+        message: string;
+        factura: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            urlArchivo: string | null;
+            nroFactura: string;
+            tipo: string;
+            fechaEmision: Date;
+            fechaVencimiento: Date | null;
+            subtotal: import("@prisma/client/runtime/library").Decimal | null;
+            iva: import("@prisma/client/runtime/library").Decimal | null;
+            importeTotal: import("@prisma/client/runtime/library").Decimal;
+            condicionFiscal: string | null;
+            descripcion: string | null;
+            estadoPago: string;
+            clienteId: string | null;
+        };
+        extracted: ExtractedInvoice;
+    }>;
+    createManual(userId: string, dto: CreateManualInvoiceDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
+        nroFactura: string;
+        tipo: string;
+        fechaEmision: Date;
+        fechaVencimiento: Date | null;
+        subtotal: import("@prisma/client/runtime/library").Decimal | null;
+        iva: import("@prisma/client/runtime/library").Decimal | null;
+        importeTotal: import("@prisma/client/runtime/library").Decimal;
+        condicionFiscal: string | null;
+        descripcion: string | null;
+        estadoPago: string;
+        clienteId: string | null;
+    }>;
+    findAll(userId: string): Promise<({
+        cliente: {
+            id: string;
+            email: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            cuit: string;
+            razonSocial: string;
+            telefono: string | null;
+            direccion: string | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
+        nroFactura: string;
+        tipo: string;
+        fechaEmision: Date;
+        fechaVencimiento: Date | null;
+        subtotal: import("@prisma/client/runtime/library").Decimal | null;
+        iva: import("@prisma/client/runtime/library").Decimal | null;
+        importeTotal: import("@prisma/client/runtime/library").Decimal;
+        condicionFiscal: string | null;
+        descripcion: string | null;
+        estadoPago: string;
+        clienteId: string | null;
+    })[]>;
+    findOne(userId: string, id: string): Promise<{
+        cliente: {
+            id: string;
+            email: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            cuit: string;
+            razonSocial: string;
+            telefono: string | null;
+            direccion: string | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
+        nroFactura: string;
+        tipo: string;
+        fechaEmision: Date;
+        fechaVencimiento: Date | null;
+        subtotal: import("@prisma/client/runtime/library").Decimal | null;
+        iva: import("@prisma/client/runtime/library").Decimal | null;
+        importeTotal: import("@prisma/client/runtime/library").Decimal;
+        condicionFiscal: string | null;
+        descripcion: string | null;
+        estadoPago: string;
+        clienteId: string | null;
+    }>;
+    updateEstado(userId: string, id: string, estadoPago: 'pendiente' | 'pagada' | 'parcial' | 'vencida'): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
+        nroFactura: string;
+        tipo: string;
+        fechaEmision: Date;
+        fechaVencimiento: Date | null;
+        subtotal: import("@prisma/client/runtime/library").Decimal | null;
+        iva: import("@prisma/client/runtime/library").Decimal | null;
+        importeTotal: import("@prisma/client/runtime/library").Decimal;
+        condicionFiscal: string | null;
+        descripcion: string | null;
+        estadoPago: string;
+        clienteId: string | null;
+    }>;
+    remove(userId: string, id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
+        nroFactura: string;
+        tipo: string;
+        fechaEmision: Date;
+        fechaVencimiento: Date | null;
+        subtotal: import("@prisma/client/runtime/library").Decimal | null;
+        iva: import("@prisma/client/runtime/library").Decimal | null;
+        importeTotal: import("@prisma/client/runtime/library").Decimal;
+        condicionFiscal: string | null;
+        descripcion: string | null;
+        estadoPago: string;
+        clienteId: string | null;
+    }>;
+    exportCSV(userId: string): Promise<string>;
+}

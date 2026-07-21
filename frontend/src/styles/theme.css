@@ -1,0 +1,193 @@
+/* ========================================
+   GESTIONAR2 – Premium Design System
+   Dark-first · Teal-Purple Palette
+   ======================================== */
+
+:root {
+  /* === Brand Gradients === */
+  --gradient-primary:    linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --gradient-accent:     linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  --gradient-hero:       linear-gradient(135deg, #10b981 0%, #6366f1 60%, #8b5cf6 100%);
+  --gradient-income:     linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  --gradient-expense:    linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+  --gradient-balance:    linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --gradient-info:       linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  --gradient-gold:       linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+
+  /* === Glow Colors === */
+  --glow-primary:  rgba(16, 185, 129, 0.25);
+  --glow-accent:   rgba(139, 92, 246, 0.25);
+  --glow-danger:   rgba(239, 68, 68, 0.25);
+  --glow-gold:     rgba(245, 158, 11, 0.25);
+
+  /* === Glass === */
+  --glass-bg:         rgba(255, 255, 255, 0.06);
+  --glass-border:     rgba(255, 255, 255, 0.12);
+  --glass-shadow:     0 8px 32px rgba(0, 0, 0, 0.18);
+
+  /* === Sidebar === */
+  --sidebar-width: 17rem; /* 272px */
+}
+
+/* ========================================
+   Glassmorphism Utilities
+   ======================================== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+  border-radius: 1rem;
+}
+
+.glass-elevated {
+  background: var(--glass-bg);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 var(--glass-highlight);
+  border-radius: 1.25rem;
+}
+
+/* Sidebar glass */
+.glass-sidebar {
+  background: var(--glass-sidebar);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-right: 1px solid var(--glass-border);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================================
+   Gradient Utility Classes
+   ======================================== */
+.gradient-primary  { background: var(--gradient-primary); }
+.gradient-accent   { background: var(--gradient-accent); }
+.gradient-hero     { background: var(--gradient-hero); }
+.gradient-income   { background: var(--gradient-income); }
+.gradient-expense  { background: var(--gradient-expense); }
+.gradient-balance  { background: var(--gradient-balance); }
+.gradient-success  { background: var(--gradient-income); }
+.gradient-danger   { background: var(--gradient-expense); }
+.gradient-info     { background: var(--gradient-info); }
+.gradient-gold     { background: var(--gradient-gold); }
+
+/* ========================================
+   Text Gradients
+   ======================================== */
+.text-gradient {
+  background: var(--gradient-hero);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-primary {
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-accent {
+  background: var(--gradient-accent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ========================================
+   Glow Effects
+   ======================================== */
+.glow-primary { box-shadow: 0 0 24px var(--glow-primary); }
+.glow-accent  { box-shadow: 0 0 24px var(--glow-accent); }
+.glow-danger  { box-shadow: 0 0 24px var(--glow-danger); }
+
+.glow-border-primary {
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4), 0 0 24px rgba(16, 185, 129, 0.15);
+}
+.glow-border-accent {
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.4), 0 0 24px rgba(139, 92, 246, 0.15);
+}
+
+/* ========================================
+   Hover Effects
+   ======================================== */
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.hover-glow-primary:hover {
+  box-shadow: 0 0 28px var(--glow-primary);
+  transition: box-shadow 0.3s ease;
+}
+
+/* ========================================
+   Status Badge Colors
+   ======================================== */
+.status-pending  { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+.status-paid     { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+.status-overdue  { background: rgba(239, 68, 68, 0.12);  color: #ef4444; }
+.status-active   { background: rgba(99, 102, 241, 0.12); color: #6366f1; }
+
+/* ========================================
+   Typography
+   ======================================== */
+.font-display {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.font-mono-financial {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* ========================================
+   Animated Gradient Border
+   ======================================== */
+.gradient-border {
+  position: relative;
+  background: clip-padding;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--gradient-hero);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ========================================
+   Animated Background Orbs (decorative)
+   ======================================== */
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-orb-primary { background: radial-gradient(circle, rgba(16,185,129,0.18) 0%, transparent 70%); }
+.bg-orb-accent  { background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%); }
+.bg-orb-blue    { background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%); }
