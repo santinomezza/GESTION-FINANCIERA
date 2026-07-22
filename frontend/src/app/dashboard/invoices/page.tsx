@@ -257,18 +257,16 @@ export default function InvoicesPage() {
                     <Badge className={getStatusColor(invoice.status)}>
                       {getStatusLabel(invoice.status)}
                     </Badge>
-                    <div className="flex gap-1">
-                      {invoice.urlArchivo && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
-                          onClick={() => window.open(`${API_URL.replace('/api', '')}${invoice.urlArchivo}`, '_blank')}
-                          title="Ver factura"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      )}
+                     <div className="flex gap-1">
+                       <Button
+                         variant="ghost"
+                         size="icon"
+                         className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
+                         onClick={() => window.open(`${API_URL}/invoices/${invoice.id}/file`, '_blank')}
+                         title="Ver factura"
+                       >
+                         <Eye className="h-4 w-4" />
+                       </Button>
                       {invoice.status !== 'PAID' && (
                         <Button
                           variant="ghost"

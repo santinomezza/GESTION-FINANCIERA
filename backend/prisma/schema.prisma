@@ -346,6 +346,8 @@ model Invoice {
   totalAmount   Float
   status        String // Ej: PENDING, PAID, OVERDUE, CANCELLED
   urlArchivo    String?
+  file          Bytes?
+  fileMimeType  String?
 
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

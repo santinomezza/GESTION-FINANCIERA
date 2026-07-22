@@ -4,6 +4,8 @@ import { CreateInvoiceDto } from './create-invoice.dto';
 import { UpdateInvoiceDto } from './update-invoice.dto';
 import { MarkInvoicePaidDto } from './mark-invoice-paid.dto';
 import { ClientsService } from './clients/clients.service';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 interface UploadedFile {
     buffer: Buffer;
     mimetype: string;
@@ -12,8 +14,9 @@ interface UploadedFile {
 export declare class InvoicesController {
     private readonly invoicesService;
     private readonly clientsService;
-    constructor(invoicesService: InvoicesService, clientsService: ClientsService);
-    create(workspaceId: string, createInvoiceDto: CreateInvoiceDto): import(".prisma/client").Prisma.Prisma__InvoiceClient<{
+    private config;
+    constructor(invoicesService: InvoicesService, clientsService: ClientsService, config: ConfigService);
+    create(workspaceId: string, createInvoiceDto: CreateInvoiceDto): Promise<{
         id: string;
         invoiceNumber: string;
         issueDate: Date;
@@ -21,12 +24,14 @@ export declare class InvoicesController {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
         workspaceId: string;
         clientId: string | null;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    }>;
     findAll(workspaceId: string, clientId?: string): import(".prisma/client").Prisma.PrismaPromise<({
         client: {
             id: string;
@@ -48,6 +53,8 @@ export declare class InvoicesController {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
@@ -97,12 +104,15 @@ export declare class InvoicesController {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
         workspaceId: string;
         clientId: string | null;
     }>;
+    getInvoiceFile(workspaceId: string, id: string, res: Response): Promise<void>;
     update(workspaceId: string, id: string, updateInvoiceDto: UpdateInvoiceDto): Promise<{
         id: string;
         invoiceNumber: string;
@@ -111,6 +121,8 @@ export declare class InvoicesController {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
@@ -125,6 +137,8 @@ export declare class InvoicesController {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
@@ -139,6 +153,8 @@ export declare class InvoicesController {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
@@ -154,6 +170,8 @@ export declare class InvoicesController {
             totalAmount: number;
             status: string;
             urlArchivo: string | null;
+            file: Buffer | null;
+            fileMimeType: string | null;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;

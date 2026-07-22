@@ -11,7 +11,7 @@ async function bootstrap() {
         logger: ['error', 'warn', 'log'],
     });
     const express = require('express');
-    app.use(express.static((0, path_1.join)(__dirname, '..', 'public'), { prefix: '/' }));
+    app.use(express.static((0, path_1.join)(process.cwd(), 'public')));
     app.enableCors({
         origin: process.env.FRONTEND_URL || 'http://localhost:3000',
         credentials: true,
@@ -34,11 +34,11 @@ async function bootstrap() {
             .build();
         const document = swagger_1.SwaggerModule.createDocument(app, config);
         swagger_1.SwaggerModule.setup('api/docs', app, document);
-        logger.log('Swagger docs: http://localhost:3001/api/docs');
+        logger.log(`Swagger docs: http://localhost:3001/api/docs`);
     }
     const port = process.env.PORT || 3001;
     await app.listen(port);
-    logger.log(`🚀 Backend corriendo en puerto ${port}`);
+    logger.log(`Backend corriendo en puerto ${port}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

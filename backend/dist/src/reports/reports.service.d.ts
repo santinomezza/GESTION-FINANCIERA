@@ -61,6 +61,8 @@ export declare class ReportsService {
         deletedAt: Date | null;
         workspaceId: string;
         status: string;
+        file: Buffer | null;
+        fileMimeType: string | null;
         invoiceNumber: string;
         issueDate: Date;
         dueDate: Date;

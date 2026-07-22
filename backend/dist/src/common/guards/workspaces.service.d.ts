@@ -8,22 +8,22 @@ export declare class WorkspacesService {
         memberRole: import(".prisma/client").$Enums.WorkspaceMemberRole;
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }[]>;
     findById(id: string, userId: string): Promise<{
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }>;
     create(userId: string, dto: {
         name: string;
@@ -32,12 +32,12 @@ export declare class WorkspacesService {
     }): Promise<{
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }>;
     createWithDefaults(userId: string, dto: {
         name: string;
@@ -46,12 +46,12 @@ export declare class WorkspacesService {
     }): Promise<{
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }>;
     update(id: string, userId: string, dto: {
         name?: string;
@@ -59,12 +59,12 @@ export declare class WorkspacesService {
     }): Promise<{
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }>;
     remove(id: string, userId: string): Promise<void>;
     private createPersonalDefaults;

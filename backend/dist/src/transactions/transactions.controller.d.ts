@@ -7,13 +7,12 @@ export declare class TransactionsController {
     constructor(transactionsService: TransactionsService);
     create(workspaceId: string, req: any, createTransactionDto: CreateTransactionDto): Promise<{
         id: string;
-        workspaceId: string;
-        type: import(".prisma/client").$Enums.TransactionType;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        categoryId: string | null;
+        type: import(".prisma/client").$Enums.TransactionType;
+        workspaceId: string;
+        description: string | null;
         amount: import("@prisma/client/runtime/library").Decimal;
         currency: import(".prisma/client").$Enums.Currency;
         notes: string | null;
@@ -22,6 +21,7 @@ export declare class TransactionsController {
         status: import(".prisma/client").$Enums.TransactionStatus;
         source: string;
         telegramMsgId: string | null;
+        categoryId: string | null;
         invoiceId: string | null;
         goalId: string | null;
         recurringTransactionId: string | null;
@@ -30,33 +30,32 @@ export declare class TransactionsController {
     findAll(workspaceId: string, filterDto: FilterTransactionsDto): import(".prisma/client").Prisma.PrismaPromise<({
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
         createdBy: {
             id: string;
-            name: string;
             email: string;
+            name: string;
         };
     } & {
         id: string;
-        workspaceId: string;
-        type: import(".prisma/client").$Enums.TransactionType;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        categoryId: string | null;
+        type: import(".prisma/client").$Enums.TransactionType;
+        workspaceId: string;
+        description: string | null;
         amount: import("@prisma/client/runtime/library").Decimal;
         currency: import(".prisma/client").$Enums.Currency;
         notes: string | null;
@@ -65,6 +64,7 @@ export declare class TransactionsController {
         status: import(".prisma/client").$Enums.TransactionStatus;
         source: string;
         telegramMsgId: string | null;
+        categoryId: string | null;
         invoiceId: string | null;
         goalId: string | null;
         recurringTransactionId: string | null;
@@ -73,28 +73,27 @@ export declare class TransactionsController {
     findOne(workspaceId: string, id: string): Promise<{
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
     } & {
         id: string;
-        workspaceId: string;
-        type: import(".prisma/client").$Enums.TransactionType;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        categoryId: string | null;
+        type: import(".prisma/client").$Enums.TransactionType;
+        workspaceId: string;
+        description: string | null;
         amount: import("@prisma/client/runtime/library").Decimal;
         currency: import(".prisma/client").$Enums.Currency;
         notes: string | null;
@@ -103,6 +102,7 @@ export declare class TransactionsController {
         status: import(".prisma/client").$Enums.TransactionStatus;
         source: string;
         telegramMsgId: string | null;
+        categoryId: string | null;
         invoiceId: string | null;
         goalId: string | null;
         recurringTransactionId: string | null;
@@ -111,28 +111,27 @@ export declare class TransactionsController {
     update(workspaceId: string, id: string, updateTransactionDto: UpdateTransactionDto): Promise<{
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
     } & {
         id: string;
-        workspaceId: string;
-        type: import(".prisma/client").$Enums.TransactionType;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        categoryId: string | null;
+        type: import(".prisma/client").$Enums.TransactionType;
+        workspaceId: string;
+        description: string | null;
         amount: import("@prisma/client/runtime/library").Decimal;
         currency: import(".prisma/client").$Enums.Currency;
         notes: string | null;
@@ -141,6 +140,7 @@ export declare class TransactionsController {
         status: import(".prisma/client").$Enums.TransactionStatus;
         source: string;
         telegramMsgId: string | null;
+        categoryId: string | null;
         invoiceId: string | null;
         goalId: string | null;
         recurringTransactionId: string | null;
@@ -148,13 +148,12 @@ export declare class TransactionsController {
     }>;
     remove(workspaceId: string, id: string): Promise<{
         id: string;
-        workspaceId: string;
-        type: import(".prisma/client").$Enums.TransactionType;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        categoryId: string | null;
+        type: import(".prisma/client").$Enums.TransactionType;
+        workspaceId: string;
+        description: string | null;
         amount: import("@prisma/client/runtime/library").Decimal;
         currency: import(".prisma/client").$Enums.Currency;
         notes: string | null;
@@ -163,6 +162,7 @@ export declare class TransactionsController {
         status: import(".prisma/client").$Enums.TransactionStatus;
         source: string;
         telegramMsgId: string | null;
+        categoryId: string | null;
         invoiceId: string | null;
         goalId: string | null;
         recurringTransactionId: string | null;
@@ -170,13 +170,12 @@ export declare class TransactionsController {
     }>;
     duplicate(workspaceId: string, id: string, req: any): Promise<{
         id: string;
-        workspaceId: string;
-        type: import(".prisma/client").$Enums.TransactionType;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        categoryId: string | null;
+        type: import(".prisma/client").$Enums.TransactionType;
+        workspaceId: string;
+        description: string | null;
         amount: import("@prisma/client/runtime/library").Decimal;
         currency: import(".prisma/client").$Enums.Currency;
         notes: string | null;
@@ -185,6 +184,7 @@ export declare class TransactionsController {
         status: import(".prisma/client").$Enums.TransactionStatus;
         source: string;
         telegramMsgId: string | null;
+        categoryId: string | null;
         invoiceId: string | null;
         goalId: string | null;
         recurringTransactionId: string | null;
@@ -213,18 +213,18 @@ export declare class TransactionsController {
         nearLimit: boolean;
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
         alertThreshold: number;
     }>;

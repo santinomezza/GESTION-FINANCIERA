@@ -37,4 +37,13 @@ export class CreateInvoiceDto {
     @IsOptional()
     @IsString()
     urlArchivo?: string;
+
+    @ApiProperty({ required: false, type: 'string', format: 'binary' })
+    @IsOptional()
+    file?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    fileMimeType?: string;
 }

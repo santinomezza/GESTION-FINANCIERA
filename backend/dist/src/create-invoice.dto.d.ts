@@ -8,5 +8,7 @@ export declare class CreateInvoiceDto {
     status: InvoiceStatus;
     clientId?: string;
     urlArchivo?: string;
+    file?: string;
+    fileMimeType?: string;
 }
 export {};

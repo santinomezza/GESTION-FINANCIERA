@@ -5,31 +5,31 @@ export declare class InvitationsController {
     constructor(service: InvitationsService);
     findAll(req: any): Promise<{
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }[]>;
     create(req: any, data: any): Promise<{
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }>;
     useInvitation(req: any, data: {
         code: string;
@@ -51,17 +51,17 @@ export declare class InvitationsController {
     }>;
     delete(req: any, id: string): Promise<{
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }>;
     update(id: string, req: any, data: {
         role?: WorkspaceMemberRole;
@@ -69,16 +69,16 @@ export declare class InvitationsController {
         expiresAt?: string;
     }): Promise<{
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }>;
 }

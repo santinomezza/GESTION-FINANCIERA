@@ -5,26 +5,26 @@ export declare class CategoryLimitsController {
     findAll(req: any): Promise<({
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
     } & {
         id: string;
-        workspaceId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        workspaceId: string;
         categoryId: string;
         limitAmount: import("@prisma/client/runtime/library").Decimal;
         period: string;
@@ -34,26 +34,26 @@ export declare class CategoryLimitsController {
     findOne(id: string, req: any): Promise<{
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
     } & {
         id: string;
-        workspaceId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        workspaceId: string;
         categoryId: string;
         limitAmount: import("@prisma/client/runtime/library").Decimal;
         period: string;
@@ -63,26 +63,26 @@ export declare class CategoryLimitsController {
     create(req: any, data: any): Promise<{
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
     } & {
         id: string;
-        workspaceId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        workspaceId: string;
         categoryId: string;
         limitAmount: import("@prisma/client/runtime/library").Decimal;
         period: string;
@@ -92,26 +92,26 @@ export declare class CategoryLimitsController {
     update(id: string, req: any, data: any): Promise<{
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
     } & {
         id: string;
-        workspaceId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        workspaceId: string;
         categoryId: string;
         limitAmount: import("@prisma/client/runtime/library").Decimal;
         period: string;
@@ -120,11 +120,11 @@ export declare class CategoryLimitsController {
     }>;
     remove(id: string, req: any): Promise<{
         id: string;
-        workspaceId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        workspaceId: string;
         categoryId: string;
         limitAmount: import("@prisma/client/runtime/library").Decimal;
         period: string;
@@ -154,18 +154,18 @@ export declare class CategoryLimitsController {
         nearLimit: boolean;
         category: {
             id: string;
-            workspaceId: string;
             name: string;
-            icon: string;
-            color: string;
-            type: import(".prisma/client").$Enums.CategoryType;
-            description: string | null;
             isActive: boolean;
-            isFavorite: boolean;
-            sortOrder: number;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
+            type: import(".prisma/client").$Enums.CategoryType;
+            workspaceId: string;
+            icon: string;
+            color: string;
+            description: string | null;
+            isFavorite: boolean;
+            sortOrder: number;
         };
         alertThreshold: number;
     }>;

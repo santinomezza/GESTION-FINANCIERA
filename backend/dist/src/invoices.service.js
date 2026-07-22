@@ -21,7 +21,7 @@ let InvoicesService = InvoicesService_1 = class InvoicesService {
         this.aiService = aiService;
         this.logger = new common_1.Logger(InvoicesService_1.name);
     }
-    create(workspaceId, createInvoiceDto) {
+    async create(workspaceId, createInvoiceDto) {
         return this.prisma.invoice.create({
             data: {
                 invoiceNumber: createInvoiceDto.invoiceNumber,
@@ -32,6 +32,8 @@ let InvoicesService = InvoicesService_1 = class InvoicesService {
                 clientId: createInvoiceDto.clientId || null,
                 workspaceId,
                 urlArchivo: createInvoiceDto.urlArchivo || null,
+                file: createInvoiceDto.file || null,
+                fileMimeType: createInvoiceDto.fileMimeType || null,
             },
         });
     }
@@ -94,6 +96,14 @@ let InvoicesService = InvoicesService_1 = class InvoicesService {
             });
             return updatedInvoice;
         });
+    }
+    async getInvoiceFile(workspaceId, id) {
+        const invoice = await this.findOne(workspaceId, id);
+        return {
+            file: invoice.file,
+            fileMimeType: invoice.fileMimeType,
+            invoiceNumber: invoice.invoiceNumber,
+        };
     }
     async extractInvoiceData(fileBuffer, mimeType) {
         try {

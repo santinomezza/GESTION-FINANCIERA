@@ -10,42 +10,42 @@ export declare class WorkspacesController {
         memberRole: import(".prisma/client").$Enums.WorkspaceMemberRole;
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }[]>;
     findOne(userId: string, id: string): Promise<{
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }>;
     create(userId: string, dto: CreateWorkspaceDto): Promise<{
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }>;
     update(userId: string, id: string, dto: UpdateWorkspaceDto): Promise<{
         id: string;
         name: string;
-        type: import(".prisma/client").$Enums.WorkspaceType;
-        userId: string;
-        enabledFeatures: string[];
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+        type: import(".prisma/client").$Enums.WorkspaceType;
+        userId: string;
+        enabledFeatures: string[];
     }>;
     remove(userId: string, id: string): Promise<void>;
     join(userId: string, data: {

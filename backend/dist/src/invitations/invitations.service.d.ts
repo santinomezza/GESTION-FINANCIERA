@@ -14,42 +14,42 @@ export declare class InvitationsService {
         createdBy: string;
     }): Promise<{
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }>;
     findByCode(code: string): Promise<{
         workspace: {
             id: string;
-            createdAt: Date;
             name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
             type: import(".prisma/client").$Enums.WorkspaceType;
             userId: string;
             enabledFeatures: string[];
-            updatedAt: Date;
-            deletedAt: Date | null;
         };
     } & {
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }>;
     useInvitation(code: string, userId: string): Promise<{
         success: boolean;
@@ -69,17 +69,17 @@ export declare class InvitationsService {
     }>;
     findAll(workspaceId: string): Promise<{
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }[]>;
     update(id: string, workspaceId: string, data: {
         role?: WorkspaceMemberRole;
@@ -87,30 +87,30 @@ export declare class InvitationsService {
         expiresAt?: Date;
     }): Promise<{
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }>;
     delete(id: string, workspaceId: string): Promise<{
         id: string;
-        code: string;
         email: string | null;
         role: import(".prisma/client").$Enums.WorkspaceMemberRole;
+        createdAt: Date;
+        workspaceId: string;
+        createdBy: string;
         displayName: string | null;
+        expiresAt: Date;
+        usedAt: Date | null;
+        code: string;
         maxUses: number;
         usesCount: number;
-        expiresAt: Date;
-        createdBy: string;
-        createdAt: Date;
-        usedAt: Date | null;
-        workspaceId: string;
     }>;
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus, UploadedFile, UseInterceptors, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus, UploadedFile, UseInterceptors, Query, Res } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './create-invoice.dto';
@@ -15,7 +15,9 @@ import { ClientsService } from './clients/clients.service';
 import { TransactionType, WorkspaceMemberRole } from '@prisma/client';
 import { diskStorage } from 'multer';
 import { join } from 'path';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync } from 'fs';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 interface UploadedFile {
   buffer: Buffer;
@@ -36,6 +38,7 @@ export class InvoicesController {
   constructor(
     private readonly invoicesService: InvoicesService,
     private readonly clientsService: ClientsService,
+    private config: ConfigService,
   ) { }
 
   @Roles(WorkspaceMemberRole.ADMIN)
@@ -55,6 +58,34 @@ export class InvoicesController {
   @Get(':id')
   findOne(@ActiveWorkspaceId() workspaceId: string, @Param('id') id: string) {
     return this.invoicesService.findOne(workspaceId, id);
+  }
+
+  @Get(':id/file')
+  @ApiOperation({ summary: 'Obtener el archivo de una factura' })
+  async getInvoiceFile(@ActiveWorkspaceId() workspaceId: string, @Param('id') id: string, @Res() res: Response) {
+    const invoice = await this.invoicesService.findOne(workspaceId, id);
+    
+    if (invoice.file) {
+      res.setHeader('Content-Type', invoice.fileMimeType || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}.${(invoice.fileMimeType || '').split('/')[1] || 'bin'}"`);
+      res.send(invoice.file);
+      return;
+    }
+    
+    if (invoice.urlArchivo) {
+      const filePath = join(this.config.get('uploadsDir'), 'invoices', invoice.urlArchivo.replace('/invoices/', ''));
+      if (!existsSync(filePath)) {
+        throw new Error('Archivo no encontrado');
+      }
+      const { readFileSync } = require('fs');
+      const file = readFileSync(filePath);
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}"`);
+      res.send(file);
+      return;
+    }
+    
+    throw new Error('Archivo no encontrado');
   }
 
   @Roles(WorkspaceMemberRole.ADMIN)
@@ -91,17 +122,6 @@ export class InvoicesController {
       throw new Error('Archivo requerido');
     }
 
-    const uploadsDir = join(__dirname, '..', 'public', 'invoices');
-    if (!existsSync(uploadsDir)) {
-      mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    const fileName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    const filePath = join(uploadsDir, fileName);
-    writeFileSync(filePath, file.buffer);
-
-    const fileUrl = `/invoices/${fileName}`;
-
     const extracted = await this.invoicesService.extractInvoiceData(file.buffer, file.mimetype);
 
     let clientId: string | undefined;
@@ -137,10 +157,11 @@ export class InvoicesController {
       totalAmount: extracted.total,
       status: 'PENDING',
       clientId: clientId || '',
-      urlArchivo: fileUrl,
-    });
+      file: file.buffer,
+      fileMimeType: file.mimetype,
+    } as any);
 
-    return { invoice, extracted, fileUrl };
+    return { invoice, extracted, fileUrl: `/api/invoices/${invoice.id}/file` };
   }
 
   @Roles(WorkspaceMemberRole.ADMIN)
@@ -153,23 +174,11 @@ export class InvoicesController {
     @Param('id') id: string,
     @UploadedFile() file: UploadedFile,
   ) {
-    if (!file) {
-      throw new Error('Archivo requerido');
-    }
+    await this.invoicesService.update(workspaceId, id, {
+      file: file.buffer,
+      fileMimeType: file.mimetype,
+    } as any);
 
-    const uploadsDir = join(__dirname, '..', 'public', 'invoices');
-    if (!existsSync(uploadsDir)) {
-      mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    const fileName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    const filePath = join(uploadsDir, fileName);
-    writeFileSync(filePath, file.buffer);
-
-    const fileUrl = `/invoices/${fileName}`;
-
-    await this.invoicesService.update(workspaceId, id, { urlArchivo: fileUrl });
-
-    return { fileUrl };
+    return { fileUrl: `/api/invoices/${id}/file` };
   }
 }

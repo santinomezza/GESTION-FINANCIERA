@@ -32,10 +32,12 @@ const clients_service_1 = require("./clients/clients.service");
 const client_1 = require("@prisma/client");
 const path_1 = require("path");
 const fs_1 = require("fs");
+const config_1 = require("@nestjs/config");
 let InvoicesController = class InvoicesController {
-    constructor(invoicesService, clientsService) {
+    constructor(invoicesService, clientsService, config) {
         this.invoicesService = invoicesService;
         this.clientsService = clientsService;
+        this.config = config;
     }
     create(workspaceId, createInvoiceDto) {
         return this.invoicesService.create(workspaceId, createInvoiceDto);
@@ -45,6 +47,28 @@ let InvoicesController = class InvoicesController {
     }
     findOne(workspaceId, id) {
         return this.invoicesService.findOne(workspaceId, id);
+    }
+    async getInvoiceFile(workspaceId, id, res) {
+        const invoice = await this.invoicesService.findOne(workspaceId, id);
+        if (invoice.file) {
+            res.setHeader('Content-Type', invoice.fileMimeType || 'application/octet-stream');
+            res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}.${(invoice.fileMimeType || '').split('/')[1] || 'bin'}"`);
+            res.send(invoice.file);
+            return;
+        }
+        if (invoice.urlArchivo) {
+            const filePath = (0, path_1.join)(this.config.get('uploadsDir'), 'invoices', invoice.urlArchivo.replace('/invoices/', ''));
+            if (!(0, fs_1.existsSync)(filePath)) {
+                throw new Error('Archivo no encontrado');
+            }
+            const { readFileSync } = require('fs');
+            const file = readFileSync(filePath);
+            res.setHeader('Content-Type', 'application/octet-stream');
+            res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}"`);
+            res.send(file);
+            return;
+        }
+        throw new Error('Archivo no encontrado');
     }
     update(workspaceId, id, updateInvoiceDto) {
         return this.invoicesService.update(workspaceId, id, updateInvoiceDto);
@@ -59,14 +83,6 @@ let InvoicesController = class InvoicesController {
         if (!file) {
             throw new Error('Archivo requerido');
         }
-        const uploadsDir = (0, path_1.join)(__dirname, '..', 'public', 'invoices');
-        if (!(0, fs_1.existsSync)(uploadsDir)) {
-            (0, fs_1.mkdirSync)(uploadsDir, { recursive: true });
-        }
-        const fileName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-        const filePath = (0, path_1.join)(uploadsDir, fileName);
-        (0, fs_1.writeFileSync)(filePath, file.buffer);
-        const fileUrl = `/invoices/${fileName}`;
         const extracted = await this.invoicesService.extractInvoiceData(file.buffer, file.mimetype);
         let clientId;
         if (extracted.cliente || extracted.razonSocial || extracted.cuit) {
@@ -97,24 +113,17 @@ let InvoicesController = class InvoicesController {
             totalAmount: extracted.total,
             status: 'PENDING',
             clientId: clientId || '',
-            urlArchivo: fileUrl,
+            file: file.buffer,
+            fileMimeType: file.mimetype,
         });
-        return { invoice, extracted, fileUrl };
+        return { invoice, extracted, fileUrl: `/api/invoices/${invoice.id}/file` };
     }
     async uploadInvoiceFile(workspaceId, id, file) {
-        if (!file) {
-            throw new Error('Archivo requerido');
-        }
-        const uploadsDir = (0, path_1.join)(__dirname, '..', 'public', 'invoices');
-        if (!(0, fs_1.existsSync)(uploadsDir)) {
-            (0, fs_1.mkdirSync)(uploadsDir, { recursive: true });
-        }
-        const fileName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-        const filePath = (0, path_1.join)(uploadsDir, fileName);
-        (0, fs_1.writeFileSync)(filePath, file.buffer);
-        const fileUrl = `/invoices/${fileName}`;
-        await this.invoicesService.update(workspaceId, id, { urlArchivo: fileUrl });
-        return { fileUrl };
+        await this.invoicesService.update(workspaceId, id, {
+            file: file.buffer,
+            fileMimeType: file.mimetype,
+        });
+        return { fileUrl: `/api/invoices/${id}/file` };
     }
 };
 exports.InvoicesController = InvoicesController;
@@ -146,6 +155,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], InvoicesController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)(':id/file'),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener el archivo de una factura' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, workspace_decorator_1.ActiveWorkspaceId)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], InvoicesController.prototype, "getInvoiceFile", null);
 __decorate([
     (0, roles_decorator_1.Roles)(client_1.WorkspaceMemberRole.ADMIN),
     (0, common_1.Patch)(':id'),
@@ -218,6 +238,7 @@ exports.InvoicesController = InvoicesController = __decorate([
     }),
     (0, common_1.Controller)('invoices'),
     __metadata("design:paramtypes", [invoices_service_1.InvoicesService,
-        clients_service_1.ClientsService])
+        clients_service_1.ClientsService,
+        config_1.ConfigService])
 ], InvoicesController);
 //# sourceMappingURL=invoices.controller.js.map

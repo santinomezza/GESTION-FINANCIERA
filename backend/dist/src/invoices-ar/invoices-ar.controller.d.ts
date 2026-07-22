@@ -17,8 +17,8 @@ export declare class InvoicesArController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            urlArchivo: string | null;
             userId: string;
+            urlArchivo: string | null;
             nroFactura: string;
             tipo: string;
             fechaEmision: Date;
@@ -37,8 +37,8 @@ export declare class InvoicesArController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        urlArchivo: string | null;
         userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -54,11 +54,11 @@ export declare class InvoicesArController {
     findAll(workspaceId: string): Promise<({
         cliente: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
-            cuit: string;
-            email: string | null;
             userId: string;
+            cuit: string;
             razonSocial: string;
             telefono: string | null;
             direccion: string | null;
@@ -67,8 +67,8 @@ export declare class InvoicesArController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        urlArchivo: string | null;
         userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -84,11 +84,11 @@ export declare class InvoicesArController {
     findOne(workspaceId: string, id: string): Promise<{
         cliente: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
-            cuit: string;
-            email: string | null;
             userId: string;
+            cuit: string;
             razonSocial: string;
             telefono: string | null;
             direccion: string | null;
@@ -97,8 +97,8 @@ export declare class InvoicesArController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        urlArchivo: string | null;
         userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -115,8 +115,8 @@ export declare class InvoicesArController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        urlArchivo: string | null;
         userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -133,8 +133,8 @@ export declare class InvoicesArController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        urlArchivo: string | null;
         userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;

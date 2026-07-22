@@ -16,7 +16,7 @@ const class_validator_1 = require("class-validator");
 const INVOICE_STATUSES = ['PENDING', 'PAID', 'OVERDUE', 'CANCELLED'];
 class CreateInvoiceDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { invoiceNumber: { required: true, type: () => String }, issueDate: { required: true, type: () => Date }, dueDate: { required: true, type: () => Date }, totalAmount: { required: true, type: () => Number }, status: { required: true, type: () => Object, enum: INVOICE_STATUSES }, clientId: { required: false, type: () => String }, urlArchivo: { required: false, type: () => String } };
+        return { invoiceNumber: { required: true, type: () => String }, issueDate: { required: true, type: () => Date }, dueDate: { required: true, type: () => Date }, totalAmount: { required: true, type: () => Number }, status: { required: true, type: () => Object, enum: INVOICE_STATUSES }, clientId: { required: false, type: () => String }, urlArchivo: { required: false, type: () => String }, file: { required: false, type: () => String }, fileMimeType: { required: false, type: () => String } };
     }
 }
 exports.CreateInvoiceDto = CreateInvoiceDto;
@@ -60,4 +60,15 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateInvoiceDto.prototype, "urlArchivo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false, type: 'string', format: 'binary' }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateInvoiceDto.prototype, "file", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateInvoiceDto.prototype, "fileMimeType", void 0);
 //# sourceMappingURL=create-invoice.dto.js.map

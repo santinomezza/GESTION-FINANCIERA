@@ -36,19 +36,19 @@ export declare class AuthService {
     }>;
     validateTelegramUser(telegramId: string): Promise<{
         id: string;
-        name: string;
-        createdAt: Date;
-        updatedAt: Date;
-        deletedAt: Date | null;
-        role: import(".prisma/client").$Enums.UserRole;
-        isActive: boolean;
         email: string;
-        passwordHash: string;
-        avatarUrl: string | null;
         telegramId: string | null;
+        name: string;
+        passwordHash: string;
+        role: import(".prisma/client").$Enums.UserRole;
+        avatarUrl: string | null;
+        isActive: boolean;
         telegramUsername: string | null;
         telegramLinkedAt: Date | null;
         preferences: import("@prisma/client/runtime/library").JsonValue;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
         lastLoginAt: Date | null;
     }>;
     private generateTokens;

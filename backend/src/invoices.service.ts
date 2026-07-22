@@ -14,7 +14,7 @@ export class InvoicesService {
         private aiService: AiService,
     ) { }
 
-    create(workspaceId: string, createInvoiceDto: CreateInvoiceDto) {
+    async create(workspaceId: string, createInvoiceDto: CreateInvoiceDto) {
         return this.prisma.invoice.create({
             data: {
                 invoiceNumber: createInvoiceDto.invoiceNumber,
@@ -25,6 +25,8 @@ export class InvoicesService {
                 clientId: createInvoiceDto.clientId || null,
                 workspaceId,
                 urlArchivo: createInvoiceDto.urlArchivo || null,
+                file: createInvoiceDto.file || null,
+                fileMimeType: createInvoiceDto.fileMimeType || null,
             } as any,
         });
     }
@@ -56,7 +58,7 @@ export class InvoicesService {
         await this.findOne(workspaceId, id); // check existence and ownership
         return this.prisma.invoice.update({
             where: { id },
-            data: updateInvoiceDto,
+            data: updateInvoiceDto as any,
         });
     }
 
@@ -96,6 +98,15 @@ export class InvoicesService {
 
             return updatedInvoice;
         });
+    }
+
+    async getInvoiceFile(workspaceId: string, id: string) {
+        const invoice = await this.findOne(workspaceId, id);
+        return {
+            file: invoice.file,
+            fileMimeType: invoice.fileMimeType,
+            invoiceNumber: invoice.invoiceNumber,
+        };
     }
 
     async extractInvoiceData(fileBuffer: Buffer, mimeType: string) {

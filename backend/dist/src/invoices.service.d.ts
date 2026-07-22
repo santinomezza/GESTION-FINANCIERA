@@ -8,7 +8,7 @@ export declare class InvoicesService {
     private aiService;
     private readonly logger;
     constructor(prisma: PrismaService, aiService: AiService);
-    create(workspaceId: string, createInvoiceDto: CreateInvoiceDto): Prisma.Prisma__InvoiceClient<{
+    create(workspaceId: string, createInvoiceDto: CreateInvoiceDto): Promise<{
         id: string;
         invoiceNumber: string;
         issueDate: Date;
@@ -16,12 +16,14 @@ export declare class InvoicesService {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
         workspaceId: string;
         clientId: string | null;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs>;
+    }>;
     findAll(workspaceId: string, clientId?: string): Prisma.PrismaPromise<({
         client: {
             id: string;
@@ -43,6 +45,8 @@ export declare class InvoicesService {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
@@ -92,6 +96,8 @@ export declare class InvoicesService {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
@@ -106,6 +112,8 @@ export declare class InvoicesService {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
@@ -120,6 +128,8 @@ export declare class InvoicesService {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
@@ -134,11 +144,18 @@ export declare class InvoicesService {
         totalAmount: number;
         status: string;
         urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
         workspaceId: string;
         clientId: string | null;
+    }>;
+    getInvoiceFile(workspaceId: string, id: string): Promise<{
+        file: Buffer<ArrayBufferLike>;
+        fileMimeType: string;
+        invoiceNumber: string;
     }>;
     extractInvoiceData(fileBuffer: Buffer, mimeType: string): Promise<import("./ai/ai.service").ExtractedInvoice>;
 }
