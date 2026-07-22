@@ -37,12 +37,6 @@ let InvoicesController = class InvoicesController {
         this.clientsService = clientsService;
         this.config = config;
     }
-    findAll(workspaceId, clientId) {
-        return this.invoicesService.findAll(workspaceId, clientId);
-    }
-    findOne(workspaceId, id) {
-        return this.invoicesService.findOne(workspaceId, id);
-    }
     async getInvoiceFile(id, res) {
         const invoice = await this.invoicesService.findOnePublic(id);
         if (invoice.file) {
@@ -51,7 +45,13 @@ let InvoicesController = class InvoicesController {
             res.send(invoice.file);
             return;
         }
-        throw new Error('Archivo no encontrado');
+        res.status(404).json({ message: 'Archivo no encontrado' });
+    }
+    findAll(workspaceId, clientId) {
+        return this.invoicesService.findAll(workspaceId, clientId);
+    }
+    findOne(workspaceId, id) {
+        return this.invoicesService.findOne(workspaceId, id);
     }
     create(workspaceId, createInvoiceDto) {
         return this.invoicesService.create(workspaceId, createInvoiceDto);
@@ -102,17 +102,28 @@ let InvoicesController = class InvoicesController {
             file: file.buffer,
             fileMimeType: file.mimetype,
         });
-        return { invoice, extracted, fileUrl: `/api/invoices/${invoice.id}/file` };
+        return { invoice, extracted, fileUrl: `/api/invoices/file/${invoice.id}` };
     }
     async uploadInvoiceFile(workspaceId, id, file) {
         await this.invoicesService.update(workspaceId, id, {
             file: file.buffer,
             fileMimeType: file.mimetype,
         });
-        return { fileUrl: `/api/invoices/${id}/file` };
+        return { fileUrl: `/api/invoices/file/${id}` };
     }
 };
 exports.InvoicesController = InvoicesController;
+__decorate([
+    (0, common_1.Get)('file/:id'),
+    (0, public_decorator_1.Public)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener el archivo de una factura' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], InvoicesController.prototype, "getInvoiceFile", null);
 __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, workspace_guard_1.WorkspaceGuard),
@@ -133,17 +144,6 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], InvoicesController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Get)(':id/file'),
-    (0, public_decorator_1.Public)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Obtener el archivo de una factura' }),
-    openapi.ApiResponse({ status: 200 }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], InvoicesController.prototype, "getInvoiceFile", null);
 __decorate([
     (0, roles_decorator_1.Roles)(client_1.WorkspaceMemberRole.ADMIN),
     (0, common_1.Post)(),

@@ -38,6 +38,22 @@ export class InvoicesController {
     private config: ConfigService,
   ) { }
 
+  @Get('file/:id')
+  @Public()
+  @ApiOperation({ summary: 'Obtener el archivo de una factura' })
+  async getInvoiceFile(@Param('id') id: string, @Res() res: Response) {
+    const invoice = await this.invoicesService.findOnePublic(id);
+
+    if (invoice.file) {
+      res.setHeader('Content-Type', invoice.fileMimeType || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}.${(invoice.fileMimeType || '').split('/')[1] || 'bin'}"`);
+      res.send(invoice.file);
+      return;
+    }
+
+    res.status(404).json({ message: 'Archivo no encontrado' });
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, WorkspaceGuard)
   findAll(
@@ -51,22 +67,6 @@ export class InvoicesController {
   @UseGuards(JwtAuthGuard, WorkspaceGuard)
   findOne(@ActiveWorkspaceId() workspaceId: string, @Param('id') id: string) {
     return this.invoicesService.findOne(workspaceId, id);
-  }
-
-  @Get(':id/file')
-  @Public()
-  @ApiOperation({ summary: 'Obtener el archivo de una factura' })
-  async getInvoiceFile(@Param('id') id: string, @Res() res: Response) {
-    const invoice = await this.invoicesService.findOnePublic(id);
-
-    if (invoice.file) {
-      res.setHeader('Content-Type', invoice.fileMimeType || 'application/octet-stream');
-      res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}.${(invoice.fileMimeType || '').split('/')[1] || 'bin'}"`);
-      res.send(invoice.file);
-      return;
-    }
-
-    throw new Error('Archivo no encontrado');
   }
 
   @Roles(WorkspaceMemberRole.ADMIN)
@@ -152,7 +152,7 @@ export class InvoicesController {
       fileMimeType: file.mimetype,
     } as any);
 
-    return { invoice, extracted, fileUrl: `/api/invoices/${invoice.id}/file` };
+    return { invoice, extracted, fileUrl: `/api/invoices/file/${invoice.id}` };
   }
 
   @Roles(WorkspaceMemberRole.ADMIN)
@@ -170,6 +170,6 @@ export class InvoicesController {
       fileMimeType: file.mimetype,
     } as any);
 
-    return { fileUrl: `/api/invoices/${id}/file` };
+    return { fileUrl: `/api/invoices/file/${id}` };
   }
 }

@@ -262,7 +262,7 @@ export default function InvoicesPage() {
                          variant="ghost"
                          size="icon"
                          className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
-                         onClick={() => window.open(`${API_URL}/invoices/${invoice.id}/file`, '_blank')}
+                         onClick={() => window.open(`${API_URL}/invoices/file/${invoice.id}`, '_blank')}
                          title="Ver factura"
                        >
                          <Eye className="h-4 w-4" />
