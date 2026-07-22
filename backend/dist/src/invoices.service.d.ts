@@ -104,6 +104,35 @@ export declare class InvoicesService {
         workspaceId: string;
         clientId: string | null;
     }>;
+    findOnePublic(id: string): Promise<{
+        client: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            deletedAt: Date | null;
+            workspaceId: string;
+            name: string;
+            cuit: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+        };
+    } & {
+        id: string;
+        invoiceNumber: string;
+        issueDate: Date;
+        dueDate: Date;
+        totalAmount: number;
+        status: string;
+        urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        workspaceId: string;
+        clientId: string | null;
+    }>;
     update(workspaceId: string, id: string, updateInvoiceDto: UpdateInvoiceDto): Promise<{
         id: string;
         invoiceNumber: string;

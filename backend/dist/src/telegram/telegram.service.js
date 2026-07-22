@@ -105,6 +105,10 @@ let TelegramService = TelegramService_1 = class TelegramService {
             this.logger.warn('Sin TELEGRAM_BOT_TOKEN — el bot de Telegram no está activo');
             return;
         }
+        if (this.isRunning) {
+            this.logger.warn('Bot de Telegram ya está corriendo, se omite doble inicio');
+            return;
+        }
         try {
             this.bot = new grammy_1.Bot(token);
             this.bot.use((0, grammy_1.session)({
@@ -120,17 +124,36 @@ let TelegramService = TelegramService_1 = class TelegramService {
             this.setupHandlers();
             const webhookUrl = this.config.get('telegram.webhookUrl');
             if (webhookUrl) {
+                await this.bot.api.deleteWebhook({ drop_pending_updates: false });
                 await this.bot.api.setWebhook(`${webhookUrl}/api/telegram/webhook`);
                 this.logger.log(`Webhook configurado: ${webhookUrl}/api/telegram/webhook`);
             }
             else {
+                await this.bot.api.deleteWebhook({ drop_pending_updates: false });
                 this.bot.start();
                 this.isRunning = true;
                 this.logger.log('Bot iniciado en modo polling (desarrollo)');
             }
         }
         catch (err) {
-            this.logger.error('Error al inicializar el bot de Telegram:', err.message);
+            if (err.error_code === 409) {
+                this.logger.error('Error 409: otra instancia del bot ya está corriendo. Solo debe haber una instancia activa.');
+            }
+            else {
+                this.logger.error('Error al inicializar el bot de Telegram:', err.message || err);
+            }
+        }
+    }
+    async onModuleDestroy() {
+        if (this.bot && this.isRunning) {
+            try {
+                await this.bot.stop();
+                this.isRunning = false;
+                this.logger.log('Bot de Telegram detenido');
+            }
+            catch (err) {
+                this.logger.error('Error al detener el bot:', err);
+            }
         }
     }
     setupHandlers() {

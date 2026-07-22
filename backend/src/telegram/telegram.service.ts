@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { AiService } from '../ai/ai.service';
@@ -26,7 +26,7 @@ interface SessionData {
 type MyContext = Context & SessionFlavor<SessionData>;
 
 @Injectable()
-export class TelegramService implements OnModuleInit {
+export class TelegramService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TelegramService.name);
   private bot: Bot<MyContext> | null = null;
   private isRunning = false;
@@ -111,6 +111,11 @@ export class TelegramService implements OnModuleInit {
       return;
     }
 
+    if (this.isRunning) {
+      this.logger.warn('Bot de Telegram ya está corriendo, se omite doble inicio');
+      return;
+    }
+
     try {
       this.bot = new Bot<MyContext>(token);
 
@@ -129,15 +134,33 @@ export class TelegramService implements OnModuleInit {
 
       const webhookUrl = this.config.get('telegram.webhookUrl');
       if (webhookUrl) {
+        await this.bot.api.deleteWebhook({ drop_pending_updates: false });
         await this.bot.api.setWebhook(`${webhookUrl}/api/telegram/webhook`);
         this.logger.log(`Webhook configurado: ${webhookUrl}/api/telegram/webhook`);
       } else {
+        await this.bot.api.deleteWebhook({ drop_pending_updates: false });
         this.bot.start();
         this.isRunning = true;
         this.logger.log('Bot iniciado en modo polling (desarrollo)');
       }
-    } catch (err) {
-      this.logger.error('Error al inicializar el bot de Telegram:', err.message);
+    } catch (err: any) {
+      if (err.error_code === 409) {
+        this.logger.error('Error 409: otra instancia del bot ya está corriendo. Solo debe haber una instancia activa.');
+      } else {
+        this.logger.error('Error al inicializar el bot de Telegram:', err.message || err);
+      }
+    }
+  }
+
+  async onModuleDestroy() {
+    if (this.bot && this.isRunning) {
+      try {
+        await this.bot.stop();
+        this.isRunning = false;
+        this.logger.log('Bot de Telegram detenido');
+      } catch (err) {
+        this.logger.error('Error al detener el bot:', err);
+      }
     }
   }
 

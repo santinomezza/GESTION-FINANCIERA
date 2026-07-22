@@ -54,6 +54,17 @@ export class InvoicesService {
         return invoice;
     }
 
+    async findOnePublic(id: string) {
+        const invoice = await this.prisma.invoice.findFirst({
+            where: { id, deletedAt: null },
+            include: { client: true },
+        });
+        if (!invoice) {
+            throw new NotFoundException('Factura no encontrada');
+        }
+        return invoice;
+    }
+
     async update(workspaceId: string, id: string, updateInvoiceDto: UpdateInvoiceDto) {
         await this.findOne(workspaceId, id); // check existence and ownership
         return this.prisma.invoice.update({

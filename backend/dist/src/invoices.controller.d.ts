@@ -16,29 +16,13 @@ export declare class InvoicesController {
     private readonly clientsService;
     private config;
     constructor(invoicesService: InvoicesService, clientsService: ClientsService, config: ConfigService);
-    create(workspaceId: string, createInvoiceDto: CreateInvoiceDto): Promise<{
-        id: string;
-        invoiceNumber: string;
-        issueDate: Date;
-        dueDate: Date;
-        totalAmount: number;
-        status: string;
-        urlArchivo: string | null;
-        file: Buffer | null;
-        fileMimeType: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        deletedAt: Date | null;
-        workspaceId: string;
-        clientId: string | null;
-    }>;
     findAll(workspaceId: string, clientId?: string): import(".prisma/client").Prisma.PrismaPromise<({
         client: {
             id: string;
+            workspaceId: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            workspaceId: string;
             name: string;
             cuit: string | null;
             email: string | null;
@@ -55,19 +39,19 @@ export declare class InvoicesController {
         urlArchivo: string | null;
         file: Buffer | null;
         fileMimeType: string | null;
+        workspaceId: string;
+        clientId: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        workspaceId: string;
-        clientId: string | null;
     })[]>;
     findOne(workspaceId: string, id: string): Promise<{
         client: {
             id: string;
+            workspaceId: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            workspaceId: string;
             name: string;
             cuit: string | null;
             email: string | null;
@@ -77,10 +61,10 @@ export declare class InvoicesController {
         transactions: {
             id: string;
             status: import(".prisma/client").$Enums.TransactionStatus;
+            workspaceId: string;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            workspaceId: string;
             categoryId: string | null;
             type: import(".prisma/client").$Enums.TransactionType;
             amount: import("@prisma/client/runtime/library").Decimal;
@@ -106,13 +90,29 @@ export declare class InvoicesController {
         urlArchivo: string | null;
         file: Buffer | null;
         fileMimeType: string | null;
+        workspaceId: string;
+        clientId: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
+    }>;
+    getInvoiceFile(id: string, res: Response): Promise<void>;
+    create(workspaceId: string, createInvoiceDto: CreateInvoiceDto): Promise<{
+        id: string;
+        invoiceNumber: string;
+        issueDate: Date;
+        dueDate: Date;
+        totalAmount: number;
+        status: string;
+        urlArchivo: string | null;
+        file: Buffer | null;
+        fileMimeType: string | null;
         workspaceId: string;
         clientId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
     }>;
-    getInvoiceFile(workspaceId: string, id: string, res: Response): Promise<void>;
     update(workspaceId: string, id: string, updateInvoiceDto: UpdateInvoiceDto): Promise<{
         id: string;
         invoiceNumber: string;
@@ -123,11 +123,11 @@ export declare class InvoicesController {
         urlArchivo: string | null;
         file: Buffer | null;
         fileMimeType: string | null;
+        workspaceId: string;
+        clientId: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        workspaceId: string;
-        clientId: string | null;
     }>;
     remove(workspaceId: string, id: string): Promise<{
         id: string;
@@ -139,11 +139,11 @@ export declare class InvoicesController {
         urlArchivo: string | null;
         file: Buffer | null;
         fileMimeType: string | null;
+        workspaceId: string;
+        clientId: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        workspaceId: string;
-        clientId: string | null;
     }>;
     markAsPaid(workspaceId: string, id: string, markAsPaidDto: MarkInvoicePaidDto): Promise<{
         id: string;
@@ -155,11 +155,11 @@ export declare class InvoicesController {
         urlArchivo: string | null;
         file: Buffer | null;
         fileMimeType: string | null;
+        workspaceId: string;
+        clientId: string | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        workspaceId: string;
-        clientId: string | null;
     }>;
     uploadInvoice(workspaceId: string, file: UploadedFile): Promise<{
         invoice: {
@@ -172,11 +172,11 @@ export declare class InvoicesController {
             urlArchivo: string | null;
             file: Buffer | null;
             fileMimeType: string | null;
+            workspaceId: string;
+            clientId: string | null;
             createdAt: Date;
             updatedAt: Date;
             deletedAt: Date | null;
-            workspaceId: string;
-            clientId: string | null;
         };
         extracted: import("./ai/ai.service").ExtractedInvoice;
         fileUrl: string;

@@ -13,11 +13,9 @@ import { MarkInvoicePaidDto } from './mark-invoice-paid.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ClientsService } from './clients/clients.service';
 import { TransactionType, WorkspaceMemberRole } from '@prisma/client';
-import { diskStorage } from 'multer';
-import { join } from 'path';
-import { existsSync } from 'fs';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { Public } from './common/decorators/public.decorator';
 
 interface UploadedFile {
   buffer: Buffer;
@@ -27,7 +25,6 @@ interface UploadedFile {
 
 @ApiTags('Invoices')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
 @ApiHeader({
   name: 'x-workspace-id',
   description: 'ID del workspace activo',
@@ -41,13 +38,8 @@ export class InvoicesController {
     private config: ConfigService,
   ) { }
 
-  @Roles(WorkspaceMemberRole.ADMIN)
-  @Post()
-  create(@ActiveWorkspaceId() workspaceId: string, @Body() createInvoiceDto: CreateInvoiceDto) {
-    return this.invoicesService.create(workspaceId, createInvoiceDto);
-  }
-
   @Get()
+  @UseGuards(JwtAuthGuard, WorkspaceGuard)
   findAll(
     @ActiveWorkspaceId() workspaceId: string,
     @Query('clientId') clientId?: string,
@@ -56,40 +48,37 @@ export class InvoicesController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, WorkspaceGuard)
   findOne(@ActiveWorkspaceId() workspaceId: string, @Param('id') id: string) {
     return this.invoicesService.findOne(workspaceId, id);
   }
 
   @Get(':id/file')
+  @Public()
   @ApiOperation({ summary: 'Obtener el archivo de una factura' })
-  async getInvoiceFile(@ActiveWorkspaceId() workspaceId: string, @Param('id') id: string, @Res() res: Response) {
-    const invoice = await this.invoicesService.findOne(workspaceId, id);
-    
+  async getInvoiceFile(@Param('id') id: string, @Res() res: Response) {
+    const invoice = await this.invoicesService.findOnePublic(id);
+
     if (invoice.file) {
       res.setHeader('Content-Type', invoice.fileMimeType || 'application/octet-stream');
       res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}.${(invoice.fileMimeType || '').split('/')[1] || 'bin'}"`);
       res.send(invoice.file);
       return;
     }
-    
-    if (invoice.urlArchivo) {
-      const filePath = join(this.config.get('uploadsDir'), 'invoices', invoice.urlArchivo.replace('/invoices/', ''));
-      if (!existsSync(filePath)) {
-        throw new Error('Archivo no encontrado');
-      }
-      const { readFileSync } = require('fs');
-      const file = readFileSync(filePath);
-      res.setHeader('Content-Type', 'application/octet-stream');
-      res.setHeader('Content-Disposition', `inline; filename="${invoice.invoiceNumber}"`);
-      res.send(file);
-      return;
-    }
-    
+
     throw new Error('Archivo no encontrado');
   }
 
   @Roles(WorkspaceMemberRole.ADMIN)
+  @Post()
+  @UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
+  create(@ActiveWorkspaceId() workspaceId: string, @Body() createInvoiceDto: CreateInvoiceDto) {
+    return this.invoicesService.create(workspaceId, createInvoiceDto);
+  }
+
+  @Roles(WorkspaceMemberRole.ADMIN)
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
   update(@ActiveWorkspaceId() workspaceId: string, @Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
     return this.invoicesService.update(workspaceId, id, updateInvoiceDto);
   }
@@ -97,6 +86,7 @@ export class InvoicesController {
   @Roles(WorkspaceMemberRole.ADMIN)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
   remove(@ActiveWorkspaceId() workspaceId: string, @Param('id') id: string) {
     return this.invoicesService.remove(workspaceId, id);
   }
@@ -104,6 +94,7 @@ export class InvoicesController {
   @Roles(WorkspaceMemberRole.ADMIN)
   @Post(':id/pay')
   @ApiOperation({ summary: 'Marcar una factura como pagada y crear la transacción de ingreso correspondiente.' })
+  @UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
   markAsPaid(
     @ActiveWorkspaceId() workspaceId: string,
     @Param('id') id: string,
@@ -114,7 +105,7 @@ export class InvoicesController {
 
   @Roles(WorkspaceMemberRole.ADMIN)
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Subir factura PDF/IMG y extraer datos con IA' })
   async uploadInvoice(@ActiveWorkspaceId() workspaceId: string, @UploadedFile() file: UploadedFile) {
@@ -166,7 +157,7 @@ export class InvoicesController {
 
   @Roles(WorkspaceMemberRole.ADMIN)
   @Post(':id/upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Subir archivo a una factura existente' })
   async uploadInvoiceFile(

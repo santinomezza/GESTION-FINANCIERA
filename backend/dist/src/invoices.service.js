@@ -58,6 +58,16 @@ let InvoicesService = InvoicesService_1 = class InvoicesService {
         }
         return invoice;
     }
+    async findOnePublic(id) {
+        const invoice = await this.prisma.invoice.findFirst({
+            where: { id, deletedAt: null },
+            include: { client: true },
+        });
+        if (!invoice) {
+            throw new common_1.NotFoundException('Factura no encontrada');
+        }
+        return invoice;
+    }
     async update(workspaceId, id, updateInvoiceDto) {
         await this.findOne(workspaceId, id);
         return this.prisma.invoice.update({

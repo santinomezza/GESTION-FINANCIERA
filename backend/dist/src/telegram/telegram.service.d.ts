@@ -1,4 +1,4 @@
-import { OnModuleInit } from '@nestjs/common';
+import { OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { AiService } from '../ai/ai.service';
@@ -19,7 +19,7 @@ interface SessionData {
     workspaceId: string | null;
 }
 type MyContext = Context & SessionFlavor<SessionData>;
-export declare class TelegramService implements OnModuleInit {
+export declare class TelegramService implements OnModuleInit, OnModuleDestroy {
     private config;
     private prisma;
     private aiService;
@@ -42,6 +42,7 @@ export declare class TelegramService implements OnModuleInit {
     invalidateUserCache(telegramId: string, userId: string): Promise<void>;
     invalidateWorkspaceCache(workspaceId: string): Promise<void>;
     onModuleInit(): Promise<void>;
+    onModuleDestroy(): Promise<void>;
     private setupHandlers;
     private handleStart;
     private showModeSelection;
