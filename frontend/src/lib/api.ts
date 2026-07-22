@@ -22,6 +22,10 @@ api.interceptors.request.use(
     if (workspaceId && config.headers) {
       config.headers['X-Workspace-Id'] = workspaceId;
     }
+    // No sobrescribir Content-Type para FormData; dejar que el navegador setee el boundary
+    if (config.data instanceof FormData && config.headers) {
+      delete config.headers['Content-Type'];
+    }
     return config;
   },
   (error) => Promise.reject(error)

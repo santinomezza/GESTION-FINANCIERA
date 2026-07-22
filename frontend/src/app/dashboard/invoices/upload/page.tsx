@@ -35,7 +35,9 @@ export default function InvoiceUploadPage() {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const res = await api.post('/invoices/upload', formData)
+      const res = await api.post('/invoices/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
       setExtracted(res.data.extracted)
       setFile(null)
       if (fileInput.current) fileInput.current.value = ''

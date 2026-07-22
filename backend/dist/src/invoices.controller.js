@@ -28,6 +28,7 @@ const roles_decorator_1 = require("./common/decorators/roles.decorator");
 const roles_guard_1 = require("./common/guards/roles.guard");
 const business_workspace_guard_1 = require("./common/guards/business-workspace.guard");
 const mark_invoice_paid_dto_1 = require("./mark-invoice-paid.dto");
+const platform_express_1 = require("@nestjs/platform-express");
 const clients_service_1 = require("./clients/clients.service");
 const client_1 = require("@prisma/client");
 const config_1 = require("@nestjs/config");
@@ -205,6 +206,7 @@ __decorate([
     (0, roles_decorator_1.Roles)(client_1.WorkspaceMemberRole.ADMIN),
     (0, common_1.Post)('upload'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, workspace_guard_1.WorkspaceGuard, business_workspace_guard_1.BusinessWorkspaceGuard, roles_guard_1.RolesGuard),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_1.ApiOperation)({ summary: 'Subir factura PDF/IMG y extraer datos con IA' }),
     openapi.ApiResponse({ status: 201 }),
@@ -218,6 +220,7 @@ __decorate([
     (0, roles_decorator_1.Roles)(client_1.WorkspaceMemberRole.ADMIN),
     (0, common_1.Post)(':id/upload'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, workspace_guard_1.WorkspaceGuard, business_workspace_guard_1.BusinessWorkspaceGuard, roles_guard_1.RolesGuard),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_1.ApiOperation)({ summary: 'Subir archivo a una factura existente' }),
     openapi.ApiResponse({ status: 201 }),

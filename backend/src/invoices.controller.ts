@@ -107,6 +107,7 @@ export class InvoicesController {
   @Roles(WorkspaceMemberRole.ADMIN)
   @Post('upload')
   @UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Subir factura PDF/IMG y extraer datos con IA' })
   async uploadInvoice(@ActiveWorkspaceId() workspaceId: string, @UploadedFile() file: UploadedFile) {
@@ -165,6 +166,7 @@ export class InvoicesController {
   @Roles(WorkspaceMemberRole.ADMIN)
   @Post(':id/upload')
   @UseGuards(JwtAuthGuard, WorkspaceGuard, BusinessWorkspaceGuard, RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Subir archivo a una factura existente' })
   async uploadInvoiceFile(

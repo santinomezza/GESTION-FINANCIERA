@@ -257,16 +257,35 @@ export default function InvoicesPage() {
                     <Badge className={getStatusColor(invoice.status)}>
                       {getStatusLabel(invoice.status)}
                     </Badge>
-                     <div className="flex gap-1">
-                       <Button
-                         variant="ghost"
-                         size="icon"
-                         className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
-                         onClick={() => window.open(`${API_URL}/invoices/file/${invoice.id}`, '_blank')}
-                         title="Ver factura"
-                       >
-                         <Eye className="h-4 w-4" />
-                       </Button>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
+                        onClick={async () => {
+                          try {
+                            const response = await api.get(`/invoices/file/${invoice.id}`, {
+                              responseType: 'blob',
+                            });
+                            const blob = new Blob([response.data], {
+                              type: (response.headers['content-type'] as string) || 'application/octet-stream',
+                            });
+                            const url = window.URL.createObjectURL(blob);
+                            window.open(url, '_blank');
+                            // Limpiar el ObjectURL después de un tiempo para liberar memoria
+                            setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+                          } catch (err: any) {
+                            toast({
+                              title: 'Error',
+                              description: err.response?.data?.message || 'No se pudo cargar el archivo',
+                              type: 'error',
+                            });
+                          }
+                        }}
+                        title="Ver factura"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       {invoice.status !== 'PAID' && (
                         <Button
                           variant="ghost"
