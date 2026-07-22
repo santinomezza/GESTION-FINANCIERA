@@ -1,3 +1,3 @@
 export declare class MarkInvoicePaidDto {
-    paymentDate: Date;
+    paymentDate?: Date;
 }

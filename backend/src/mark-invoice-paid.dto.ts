@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class MarkInvoicePaidDto {
     @ApiProperty({
-        description: 'La fecha en que se recibió el pago de la factura.',
+        description: 'La fecha en que se recibió el pago de la factura. Si no se envía se usa la fecha actual.',
         example: '2026-07-15T00:00:00.000Z',
+        required: false,
     })
-    @IsDateString()
-    @IsNotEmpty()
-    paymentDate: Date;
+    @IsOptional()
+    paymentDate?: Date;
 }

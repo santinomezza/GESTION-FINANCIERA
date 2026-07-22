@@ -75,6 +75,7 @@ let InvoicesService = InvoicesService_1 = class InvoicesService {
         if (invoice.status === 'PAID') {
             throw new common_1.ConflictException('La factura ya ha sido pagada.');
         }
+        const payment = paymentDate || new Date();
         return this.prisma.$transaction(async (tx) => {
             const updatedInvoice = await tx.invoice.update({
                 where: { id },
@@ -85,7 +86,7 @@ let InvoicesService = InvoicesService_1 = class InvoicesService {
                     workspaceId,
                     amount: new client_1.Prisma.Decimal(invoice.totalAmount),
                     type: client_1.TransactionType.INCOME,
-                    date: paymentDate,
+                    date: payment,
                     description: `Cobro de factura #${invoice.invoiceNumber}${invoice.client ? ' - ' + invoice.client.name : ''}`,
                     invoiceId: invoice.id,
                     status: 'CONFIRMED',

@@ -68,11 +68,13 @@ export class InvoicesService {
         });
     }
 
-    async markAsPaid(workspaceId: string, id: string, paymentDate: Date) {
+    async markAsPaid(workspaceId: string, id: string, paymentDate?: Date) {
         const invoice = await this.findOne(workspaceId, id);
         if (invoice.status === 'PAID') {
             throw new ConflictException('La factura ya ha sido pagada.');
         }
+
+        const payment = paymentDate || new Date();
 
         return this.prisma.$transaction(async (tx) => {
             const updatedInvoice = await tx.invoice.update({
@@ -85,7 +87,7 @@ export class InvoicesService {
                     workspaceId,
                     amount: new Prisma.Decimal(invoice.totalAmount),
                     type: TransactionType.INCOME,
-                    date: paymentDate,
+                    date: payment,
                     description: `Cobro de factura #${invoice.invoiceNumber}${invoice.client ? ' - ' + invoice.client.name : ''}`,
                     invoiceId: invoice.id,
                     status: 'CONFIRMED',

@@ -15,17 +15,17 @@ const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class MarkInvoicePaidDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { paymentDate: { required: true, type: () => Date } };
+        return { paymentDate: { required: false, type: () => Date } };
     }
 }
 exports.MarkInvoicePaidDto = MarkInvoicePaidDto;
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'La fecha en que se recibió el pago de la factura.',
+        description: 'La fecha en que se recibió el pago de la factura. Si no se envía se usa la fecha actual.',
         example: '2026-07-15T00:00:00.000Z',
+        required: false,
     }),
-    (0, class_validator_1.IsDateString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Date)
 ], MarkInvoicePaidDto.prototype, "paymentDate", void 0);
 //# sourceMappingURL=mark-invoice-paid.dto.js.map
