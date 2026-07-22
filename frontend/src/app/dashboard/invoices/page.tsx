@@ -198,10 +198,10 @@ export default function InvoicesPage() {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'PAGADA': return 'PAGADA'
-      case 'PENDIENTE': return 'PENDIENTE'
-      case 'VENCIDA': return 'VENCIDA'
-      case 'CANCELADA': return 'CANCELADA'
+      case 'PAID': return 'PAGADA'
+      case 'PENDING': return 'PENDIENTE'
+      case 'OVERDUE': return 'VENCIDA'
+      case 'CANCELLED': return 'CANCELADA'
       default: return status
     }
   }
