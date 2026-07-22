@@ -15,6 +15,7 @@ export declare class InvoicesController {
     private readonly invoicesService;
     private readonly clientsService;
     private config;
+    private readonly logger;
     constructor(invoicesService: InvoicesService, clientsService: ClientsService, config: ConfigService);
     getInvoiceFile(id: string, res: Response): Promise<void>;
     findAll(workspaceId: string, clientId?: string): import(".prisma/client").Prisma.PrismaPromise<({
@@ -178,7 +179,7 @@ export declare class InvoicesController {
             updatedAt: Date;
             deletedAt: Date | null;
         };
-        extracted: import("./ai/ai.service").ExtractedInvoice;
+        extracted: any;
         fileUrl: string;
     }>;
     uploadInvoiceFile(workspaceId: string, id: string, file: UploadedFile): Promise<{

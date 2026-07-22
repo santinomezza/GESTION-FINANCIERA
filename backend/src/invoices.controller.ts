@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus, UploadedFile, UseInterceptors, Query, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, HttpStatus, UploadedFile, UseInterceptors, Query, Res, Logger } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiHeader, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './create-invoice.dto';
@@ -32,6 +32,7 @@ interface UploadedFile {
 })
 @Controller('invoices')
 export class InvoicesController {
+  private readonly logger = new Logger(InvoicesController.name);
   constructor(
     private readonly invoicesService: InvoicesService,
     private readonly clientsService: ClientsService,
@@ -113,7 +114,13 @@ export class InvoicesController {
       throw new Error('Archivo requerido');
     }
 
-    const extracted = await this.invoicesService.extractInvoiceData(file.buffer, file.mimetype);
+    let extracted;
+    try {
+      extracted = await this.invoicesService.extractInvoiceData(file.buffer, file.mimetype);
+    } catch (err: any) {
+      this.logger.error('Error al extraer datos de factura:', err.message || err);
+      throw new Error(err.message || 'Error al procesar la factura');
+    }
 
     let clientId: string | undefined;
     if (extracted.cliente || extracted.razonSocial || extracted.cuit) {

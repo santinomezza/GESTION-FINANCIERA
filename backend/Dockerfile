@@ -22,4 +22,5 @@ ENV NODE_ENV=production
 
 EXPOSE 3001
 
+# Aplica migraciones y levanta NestJS
 CMD ["sh", "-c", "npx prisma migrate deploy && dumb-init node dist/src/main"]

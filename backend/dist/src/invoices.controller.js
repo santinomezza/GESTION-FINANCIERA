@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var InvoicesController_1;
 var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InvoicesController = void 0;
@@ -31,11 +32,12 @@ const clients_service_1 = require("./clients/clients.service");
 const client_1 = require("@prisma/client");
 const config_1 = require("@nestjs/config");
 const public_decorator_1 = require("./common/decorators/public.decorator");
-let InvoicesController = class InvoicesController {
+let InvoicesController = InvoicesController_1 = class InvoicesController {
     constructor(invoicesService, clientsService, config) {
         this.invoicesService = invoicesService;
         this.clientsService = clientsService;
         this.config = config;
+        this.logger = new common_1.Logger(InvoicesController_1.name);
     }
     async getInvoiceFile(id, res) {
         const invoice = await this.invoicesService.findOnePublic(id);
@@ -69,7 +71,14 @@ let InvoicesController = class InvoicesController {
         if (!file) {
             throw new Error('Archivo requerido');
         }
-        const extracted = await this.invoicesService.extractInvoiceData(file.buffer, file.mimetype);
+        let extracted;
+        try {
+            extracted = await this.invoicesService.extractInvoiceData(file.buffer, file.mimetype);
+        }
+        catch (err) {
+            this.logger.error('Error al extraer datos de factura:', err.message || err);
+            throw new Error(err.message || 'Error al procesar la factura');
+        }
         let clientId;
         if (extracted.cliente || extracted.razonSocial || extracted.cuit) {
             const clientName = extracted.razonSocial || extracted.cliente;
@@ -219,7 +228,7 @@ __decorate([
     __metadata("design:paramtypes", [String, String, typeof (_b = typeof common_1.UploadedFile !== "undefined" && common_1.UploadedFile) === "function" ? _b : Object]),
     __metadata("design:returntype", Promise)
 ], InvoicesController.prototype, "uploadInvoiceFile", null);
-exports.InvoicesController = InvoicesController = __decorate([
+exports.InvoicesController = InvoicesController = InvoicesController_1 = __decorate([
     (0, swagger_1.ApiTags)('Invoices'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiHeader)({

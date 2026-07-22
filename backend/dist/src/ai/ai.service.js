@@ -36,41 +36,68 @@ let AiService = AiService_1 = class AiService {
         if (!this.geminiModel) {
             throw new Error('Gemini API no está configurada');
         }
-        const response = await axios_1.default.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.config.get('gemini.apiKey')}`, {
-            contents: [{
-                    parts: [
-                        {
-                            text: `Analiza este documento de factura argentina y extrae SOLO en formato JSON válido estos campos:
-- fecha (formato ISO: YYYY-MM-DD, ej: "2025-01-22")
-- razon_social (nombre del emisor)
-- cuit (formato: XX-XXXXXXXX-X)
-- numero_ticket (número completo de comprobante, ej: "00002-00002747")
-- importe_neto (número decimal, usar punto como separador decimal, sin separador de miles)
-- iva_21 (número decimal, usar punto como separador decimal)
-- total (número decimal, usar punto como separador decimal)
+        let response;
+        try {
+            response = await axios_1.default.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.config.get('gemini.apiKey')}`, {
+                contents: [
+                    {
+                        parts: [
+                            {
+                                text: `Analiza este documento de factura argentina y extrae SOLO en formato JSON válido estos campos:
+                    - fecha (formato ISO: YYYY-MM-DD, ej: "2025-01-22")
+                    - razon_social (nombre del emisor)
+                    - cuit (formato: XX-XXXXXXXX-X)
+                    - numero_ticket (número completo de comprobante, ej: "00002-00002747")
+                    - importe_neto (número decimal, usar punto como separador decimal, sin separador de miles)
+                    - iva_21 (número decimal, usar punto como separador decimal)
+                    - total (número decimal, usar punto como separador decimal)
 
-Importante: La fecha debe estar en formato YYYY-MM-DD. Si no puedes determinar la fecha, devuelve null.
-
-Responde SOLO con el JSON, sin markdown ni explicaciones.`,
-                        },
-                        {
-                            inlineData: {
-                                mimeType: mimeType,
-                                data: fileBuffer.toString('base64'),
+                    Importante: La fecha debe estar en formato YYYY-MM-DD. Si no puedes determinar la fecha, devuelve null.
+                    Responde SOLO con el JSON, sin markdown ni explicaciones.`,
                             },
-                        },
-                    ],
-                }],
-        }, {
-            headers: { 'Content-Type': 'application/json' },
-            timeout: 60000,
-        });
-        const textResponse = response.data.candidates[0].content.parts[0].text;
+                            {
+                                inlineData: {
+                                    mimeType: mimeType,
+                                    data: fileBuffer.toString('base64'),
+                                },
+                            },
+                        ],
+                    },
+                ],
+            }, {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 60000,
+            });
+        }
+        catch (err) {
+            const status = err.response?.status;
+            const message = err.response?.data?.error?.message || err.message;
+            this.logger.error(`Error en Gemini API [${status}]: ${message}`);
+            throw new Error(`Error al comunicarse con el servicio de extracción: ${status || 'timeout'} - ${message}`);
+        }
+        const candidates = response.data?.candidates;
+        if (!candidates || candidates.length === 0) {
+            this.logger.error('Gemini response sin candidates', JSON.stringify(response.data));
+            throw new Error('El servicio de extracción no devolvió resultados para esta factura');
+        }
+        const textResponse = candidates[0]?.content?.parts?.[0]?.text;
+        if (!textResponse) {
+            this.logger.error('Gemini response sin text', JSON.stringify(response.data));
+            throw new Error('El servicio de extracción devolvió una respuesta vacía');
+        }
         const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-            throw new Error('Gemini no devolvió un JSON válido');
+            this.logger.error('Gemini response sin JSON', textResponse);
+            throw new Error('El servicio de extracción no devolvió un formato válido');
         }
-        const parsed = JSON.parse(jsonMatch[0]);
+        let parsed;
+        try {
+            parsed = JSON.parse(jsonMatch[0]);
+        }
+        catch (e) {
+            this.logger.error('Error parseando JSON de Gemini', jsonMatch[0]);
+            throw new Error('No se pudo interpretar la respuesta del servicio de extracción');
+        }
         const fecha = this.parseDate(parsed.fecha);
         return {
             fecha: fecha,
