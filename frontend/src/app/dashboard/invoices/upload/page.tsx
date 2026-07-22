@@ -35,15 +35,13 @@ export default function InvoiceUploadPage() {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const res = await api.post('/invoices/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      const res = await api.post('/invoices/upload', formData)
       setExtracted(res.data.extracted)
       setFile(null)
       if (fileInput.current) fileInput.current.value = ''
       toast({ title: 'Factura procesada', description: `Factura #${res.data.invoice.invoiceNumber} creada`, type: 'success' })
     } catch (err: any) {
-      toast({ title: 'Error', description: err.response?.data?.message || 'Error al procesar factura', type: 'error' })
+      toast({ title: 'Error', description: err.response?.data?.message || err.response?.data || 'Error al procesar factura', type: 'error' })
     } finally {
       setUploading(false)
     }
