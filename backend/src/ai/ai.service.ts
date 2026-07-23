@@ -46,54 +46,287 @@ export class AiService {
   }
 
   async extractInvoice(fileBuffer: Buffer, mimeType: string): Promise<ExtractedInvoice> {
-    if (!this.geminiModel) {
-      throw new Error('Gemini API no está configurada');
+    // Generar un hash del contenido para caché
+    const crypto = require('crypto');
+    const contentHash = crypto.createHash('md5').update(fileBuffer).digest('hex');
+    const cacheKey = `invoice_extraction:${contentHash}`;
+
+    // Intentar obtener de caché primero
+    const cached = await this.getCachedExtraction(cacheKey);
+    if (cached) {
+      this.logger.log('Datos de factura obtenidos de caché');
+      return cached;
+    }
+
+    let result: ExtractedInvoice;
+
+    // Intentar extracción local primero (sin límites)
+    try {
+      this.logger.log('Intentando extracción local...');
+      result = await this.extractInvoiceLocally(fileBuffer, mimeType);
+      this.logger.log('Extracción local exitosa');
+    } catch (localError) {
+      this.logger.warn('Extracción local falló, intentando con Gemini...', localError);
+
+      // Si falla la extracción local y Gemini está disponible, usar Gemini
+      if (!this.geminiModel) {
+        throw new Error('No se pudo extraer datos de la factura. Verificá que la imagen sea clara y legible.');
+      }
+
+      result = await this.extractInvoiceWithGemini(fileBuffer, mimeType);
+    }
+
+    // Guardar en caché por 1 hora
+    await this.setCachedExtraction(cacheKey, result, 3600);
+
+    return result;
+  }
+
+  private async extractInvoiceLocally(fileBuffer: Buffer, mimeType: string): Promise<ExtractedInvoice> {
+    let text = '';
+
+    // Extraer texto según el tipo de archivo
+    if (mimeType === 'application/pdf') {
+      text = await this.extractTextFromPDF(fileBuffer);
+    } else if (mimeType.startsWith('image/')) {
+      text = await this.extractTextFromImage(fileBuffer);
+    } else {
+      throw new Error('Tipo de archivo no soportado');
+    }
+
+    if (!text || text.trim().length === 0) {
+      throw new Error('No se pudo extraer texto del documento');
+    }
+
+    this.logger.log(`Texto extraído (${text.length} caracteres)`);
+
+    // Parsear el texto extraído
+    return this.parseInvoiceText(text);
+  }
+
+  private async extractTextFromPDF(buffer: Buffer): Promise<string> {
+    try {
+      const pdfParse = require('pdf-parse');
+      const data = await pdfParse(buffer);
+      return data.text;
+    } catch (error) {
+      this.logger.error('Error parseando PDF:', error);
+      throw new Error('No se pudo leer el PDF');
+    }
+  }
+
+  private async extractTextFromImage(buffer: Buffer): Promise<string> {
+    // Para imágenes, usar regex patterns comunes en facturas argentinas
+    // ya que no tenemos OCR local sin dependencias adicionales
+    const base64 = buffer.toString('base64');
+
+    // Intentar usar Gemini con un prompt más específico y corto
+    if (this.geminiModel) {
+      try {
+        const response = await this.geminiModel.generateContent([
+          {
+            text: 'Extrae el texto de esta imagen de factura. Solo devuelve el texto plano sin formato.',
+          },
+          {
+            inlineData: {
+              mimeType: 'image/jpeg',
+              data: base64,
+            },
+          },
+        ]);
+        return response.response.candidates[0]?.content?.parts[0]?.text || '';
+      } catch (error) {
+        this.logger.warn('Error en OCR con Gemini:', error);
+      }
+    }
+
+    throw new Error('No se pudo extraer texto de la imagen');
+  }
+
+  private parseInvoiceText(text: string): ExtractedInvoice {
+    const result: ExtractedInvoice = {
+      fecha: null,
+      cliente: null,
+      cuit: null,
+      razonSocial: null,
+      numeroTicket: null,
+      neto: null,
+      ivaPorcentaje: null,
+      ivaMonto: null,
+      total: null,
+      confidence: 0.7,
+      rawText: text,
+    };
+
+    // Extraer fecha (formatos comunes: DD/MM/YYYY, YYYY-MM-DD, DD-MM-YYYY)
+    const fechaPatterns = [
+      /(\d{2}[\/\-\.]\d{2}[\/\-\.]\d{4})/,
+      /(\d{4}[\/\-\.]\d{2}[\/\-\.]\d{2})/,
+    ];
+    for (const pattern of fechaPatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        result.fecha = this.parseDate(match[1]);
+        break;
+      }
+    }
+
+    // Extraer CUIT (formato: XX-XXXXXXXX-X)
+    const cuitMatch = text.match(/(\d{2}[-\s]?\d{8}[-\s]?\d{1})/);
+    if (cuitMatch) {
+      result.cuit = cuitMatch[1].replace(/\s/g, '-');
+    }
+
+    // Extraer número de factura (patrones comunes)
+    const numeroPatterns = [
+      /(?:N°|Nº|Numero|Número|Factura|Comprobante)[:\s]*([A-Z0-9\-]+)/i,
+      /(\d{4}[-\s]\d{8})/,
+    ];
+    for (const pattern of numeroPatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        result.numeroTicket = match[1].trim();
+        break;
+      }
+    }
+
+    // Extraer montos
+    const amountPatterns = {
+      total: /(?:Total|TOTAL|Importe Total|Monto Total)[:\s]*\$?\s*([\d.,]+)/i,
+      neto: /(?:Neto|NETO|Subtotal|SUBTOTAL)[:\s]*\$?\s*([\d.,]+)/i,
+      iva: /(?:IVA|I\.V\.A\.)[:\s]*\$?\s*([\d.,]+)/i,
+    };
+
+    // Extraer total
+    const totalMatch = text.match(amountPatterns.total);
+    if (totalMatch) {
+      result.total = this.parseAmount(totalMatch[1]);
+    }
+
+    // Extraer neto
+    const netoMatch = text.match(amountPatterns.neto);
+    if (netoMatch) {
+      result.neto = this.parseAmount(netoMatch[1]);
+    }
+
+    // Extraer IVA
+    const ivaMatch = text.match(amountPatterns.iva);
+    if (ivaMatch) {
+      result.ivaMonto = this.parseAmount(ivaMatch[1]);
+      result.ivaPorcentaje = 21; // IVA argentino por defecto
+    }
+
+    // Si no hay neto pero hay total y IVA, calcular neto
+    if (!result.neto && result.total && result.ivaMonto) {
+      result.neto = result.total - result.ivaMonto;
+    }
+
+    // Si hay total pero no hay IVA, asumir IVA 21%
+    if (result.total && !result.ivaMonto && !result.neto) {
+      result.neto = result.total / 1.21;
+      result.ivaMonto = result.total - result.neto;
+      result.ivaPorcentaje = 21;
+    }
+
+    // Extraer razón social (después de CUIT o en líneas con mayúsculas)
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 3);
+    for (const line of lines) {
+      // Buscar líneas que parezcan nombres de empresas/personas
+      if (line.length > 5 && line.length < 60 && !line.match(/^\d+$/) && !line.match(/^[\d\s.,]+$/)) {
+        if (!result.razonSocial) {
+          result.razonSocial = line;
+          result.cliente = line;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private parseAmount(amountStr: string): number {
+    const cleaned = amountStr.replace(/\./g, '').replace(',', '.');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? 0 : num;
+  }
+
+  private async extractInvoiceWithGemini(fileBuffer: Buffer, mimeType: string): Promise<ExtractedInvoice> {
+    // Generar un hash del contenido para caché
+    const crypto = require('crypto');
+    const contentHash = crypto.createHash('md5').update(fileBuffer).digest('hex');
+    const cacheKey = `invoice_extraction:${contentHash}`;
+
+    // Intentar obtener de caché primero
+    const cached = await this.getCachedExtraction(cacheKey);
+    if (cached) {
+      this.logger.log('Datos de factura obtenidos de caché');
+      return cached;
     }
 
     let response;
-    try {
-      response = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.config.get('gemini.apiKey')}`,
-        {
-          contents: [
-            {
-              parts: [
-                {
-                  text: `Analiza este documento de factura argentina y extrae SOLO en formato JSON válido estos campos:
-                    - fecha (formato ISO: YYYY-MM-DD, ej: "2025-01-22")
-                    - razon_social (nombre del cliente o comprador, NO del emisor)
-                    - cuit (CUIT del cliente, formato: XX-XXXXXXXX-X)
-                    - numero_ticket (número completo de comprobante, ej: "00002-00002747")
-                    - importe_neto (número decimal, usar punto como separador decimal, sin separador de miles)
-                    - iva_21 (número decimal, usar punto como separador decimal)
-                    - total (número decimal, usar punto como separador decimal)
+    let retries = 3;
+    let lastError: any = null;
 
-                    Importante: 
-                    - razon_social debe ser el nombre del CLIENTE (comprador), NO del emisor de la factura
-                    - Busca en campos como "Apellido y Nombre / Razón Social" o similares
-                    - La fecha debe estar en formato YYYY-MM-DD. Si no puedes determinar la fecha, devuelve null.
-                    Responde SOLO con el JSON, sin markdown ni explicaciones.`,
-                },
-                {
-                  inlineData: {
-                    mimeType: mimeType,
-                    data: fileBuffer.toString('base64'),
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        response = await axios.post(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.config.get('gemini.apiKey')}`,
+          {
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `Analiza este documento de factura argentina y extrae SOLO en formato JSON válido estos campos:
+                      - fecha (formato ISO: YYYY-MM-DD, ej: "2025-01-22")
+                      - razon_social (nombre del cliente o comprador, NO del emisor)
+                      - cuit (CUIT del cliente, formato: XX-XXXXXXXX-X)
+                      - numero_ticket (número completo de comprobante, ej: "00002-00002747")
+                      - importe_neto (número decimal, usar punto como separador decimal, sin separador de miles)
+                      - iva_21 (número decimal, usar punto como separador decimal)
+                      - total (número decimal, usar punto como separador decimal)
+
+                      Importante: 
+                      - razon_social debe ser el nombre del CLIENTE (comprador), NO del emisor de la factura
+                      - Busca en campos como "Apellido y Nombre / Razón Social" o similares
+                      - La fecha debe estar en formato YYYY-MM-DD. Si no puedes determinar la fecha, devuelve null.
+                      Responde SOLO con el JSON, sin markdown ni explicaciones.`,
                   },
-                },
-              ],
-            },
-          ],
-        },
-        {
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 60000,
+                  {
+                    inlineData: {
+                      mimeType: mimeType,
+                      data: fileBuffer.toString('base64'),
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 60000,
+          }
+        );
+        break; // Si llegamos aquí, la solicitud fue exitosa
+      } catch (err: any) {
+        lastError = err;
+        const status = err.response?.status;
+        const message = err.response?.data?.error?.message || err.message;
+
+        // Si es error 429 (rate limit), esperar y reintentar
+        if (status === 429 && attempt < retries) {
+          const retryAfter = err.response?.data?.error?.details?.find((d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo')?.retryDelay || 45;
+          this.logger.warn(`Rate limit alcanzado (intento ${attempt}/${retries}). Esperando ${retryAfter}s antes de reintentar...`);
+          await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+          continue;
         }
-      );
-    } catch (err: any) {
-      const status = err.response?.status;
-      const message = err.response?.data?.error?.message || err.message;
-      this.logger.error(`Error en Gemini API [${status}]: ${message}`);
-      throw new Error(`Error al comunicarse con el servicio de extracción: ${status || 'timeout'} - ${message}`);
+
+        // Si no es 429 o ya no hay más reintentos, lanzar error
+        this.logger.error(`Error en Gemini API [${status}]: ${message}`);
+        throw new Error(`Error al comunicarse con el servicio de extracción: ${status || 'timeout'} - ${message}`);
+      }
+    }
+
+    if (!response) {
+      throw new Error('No se pudo obtener respuesta del servicio de extracción después de múltiples intentos');
     }
 
     const candidates = response.data?.candidates;
@@ -124,7 +357,7 @@ export class AiService {
 
     const fecha = this.parseDate(parsed.fecha);
     const razonSocial = this.cleanRazonSocial(parsed.razon_social);
-    return {
+    const result = {
       fecha: fecha,
       cliente: razonSocial,
       cuit: parsed.cuit || null,
@@ -137,6 +370,47 @@ export class AiService {
       confidence: 0.85,
       rawText: JSON.stringify(parsed),
     };
+
+    // Guardar en caché por 1 hora
+    await this.setCachedExtraction(cacheKey, result, 3600);
+
+    return result;
+  }
+
+  private async getCachedExtraction(key: string): Promise<any | null> {
+    // Implementación simple de caché en memoria (se puede reemplazar por Redis)
+    if (!(global as any).invoiceExtractionCache) {
+      (global as any).invoiceExtractionCache = new Map();
+    }
+
+    const cache = (global as any).invoiceExtractionCache;
+    const cached = cache.get(key);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+    return null;
+  }
+
+  private async setCachedExtraction(key: string, value: any, ttlSeconds: number): Promise<void> {
+    if (!(global as any).invoiceExtractionCache) {
+      (global as any).invoiceExtractionCache = new Map();
+    }
+
+    const cache = (global as any).invoiceExtractionCache;
+    cache.set(key, {
+      data: value,
+      expiresAt: Date.now() + (ttlSeconds * 1000),
+    });
+
+    // Limpiar caché antiguo (mantener máximo 1000 entradas)
+    if (cache.size > 1000) {
+      const now = Date.now();
+      for (const [k, v] of cache.entries()) {
+        if (v.expiresAt < now) {
+          cache.delete(k);
+        }
+      }
+    }
   }
 
   private cleanRazonSocial(value: string | null | undefined): string | null {

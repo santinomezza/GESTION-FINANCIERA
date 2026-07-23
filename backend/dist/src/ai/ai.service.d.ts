@@ -27,6 +27,14 @@ export declare class AiService {
     private geminiModel;
     constructor(config: ConfigService);
     extractInvoice(fileBuffer: Buffer, mimeType: string): Promise<ExtractedInvoice>;
+    private extractInvoiceLocally;
+    private extractTextFromPDF;
+    private extractTextFromImage;
+    private parseInvoiceText;
+    private parseAmount;
+    private extractInvoiceWithGemini;
+    private getCachedExtraction;
+    private setCachedExtraction;
     private cleanRazonSocial;
     private parseDate;
     parseMessage(message: string, userCategories?: string[]): ParsedTransaction;
