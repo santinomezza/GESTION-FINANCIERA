@@ -253,76 +253,78 @@ export default function InvoicesPage() {
                             {invoice.client?.name || 'Sin cliente'} · {new Date(invoice.issueDate).toLocaleDateString('es-AR')}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2 md:gap-3">
-                          <span className="font-semibold text-sm md:text-base">${Number(invoice.totalAmount).toLocaleString('es-AR')}</span>
-                          <Badge className={`${getStatusColor(invoice.status)} text-xs`}>
-                            {getStatusLabel(invoice.status)}
-                          </Badge>
+                        <div className="flex flex-col items-end gap-2">
+                          <div className="flex items-center gap-2 md:gap-3">
+                            <span className="font-semibold text-sm md:text-base">${Number(invoice.totalAmount).toLocaleString('es-AR')}</span>
+                            <Badge className={`${getStatusColor(invoice.status)} text-xs`}>
+                              {getStatusLabel(invoice.status)}
+                            </Badge>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
+                              onClick={async () => {
+                                try {
+                                  const response = await api.get(`/invoices/file/${invoice.id}`, {
+                                    responseType: 'blob',
+                                  });
+                                  const blob = new Blob([response.data], {
+                                    type: (response.headers['content-type'] as string) || 'application/octet-stream',
+                                  });
+                                  const url = window.URL.createObjectURL(blob);
+                                  window.open(url, '_blank');
+                                  setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+                                } catch (err: any) {
+                                  toast({
+                                    title: 'Error',
+                                    description: err.response?.data?.message || 'No se pudo cargar el archivo',
+                                    type: 'error',
+                                  });
+                                }
+                              }}
+                              title="Ver factura"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            {invoice.status !== 'PAID' && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-500/10"
+                                onClick={() => payMutation.mutate(invoice.id)}
+                                disabled={payMutation.isPending}
+                                title="Marcar como pagada"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => openEditDialog(invoice)}
+                              title="Editar"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => {
+                                if (confirm('¿Eliminar esta factura?')) {
+                                  deleteMutation.mutate(invoice.id)
+                                }
+                              }}
+                              disabled={deleteMutation.isPending}
+                              title="Eliminar"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex gap-1 mt-2 md:mt-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
-                          onClick={async () => {
-                            try {
-                              const response = await api.get(`/invoices/file/${invoice.id}`, {
-                                responseType: 'blob',
-                              });
-                              const blob = new Blob([response.data], {
-                                type: (response.headers['content-type'] as string) || 'application/octet-stream',
-                              });
-                              const url = window.URL.createObjectURL(blob);
-                              window.open(url, '_blank');
-                              setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-                            } catch (err: any) {
-                              toast({
-                                title: 'Error',
-                                description: err.response?.data?.message || 'No se pudo cargar el archivo',
-                                type: 'error',
-                              });
-                            }
-                          }}
-                          title="Ver factura"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        {invoice.status !== 'PAID' && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-500/10"
-                            onClick={() => payMutation.mutate(invoice.id)}
-                            disabled={payMutation.isPending}
-                            title="Marcar como pagada"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => openEditDialog(invoice)}
-                          title="Editar"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => {
-                            if (confirm('¿Eliminar esta factura?')) {
-                              deleteMutation.mutate(invoice.id)
-                            }
-                          }}
-                          disabled={deleteMutation.isPending}
-                          title="Eliminar"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
                   </div>

@@ -91,10 +91,10 @@ let ReportsService = ReportsService_1 = class ReportsService {
             { header: 'Estado', key: 'status', width: 12 },
         ];
         const headerRow = sheet.getRow(1);
-        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF385144' } };
-        headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
-        headerRow.height = 30;
+        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+        headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10b981' } };
+        headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        headerRow.height = 35;
         let totalIncome = 0;
         let totalExpense = 0;
         for (const tx of transactions) {
@@ -121,24 +121,29 @@ let ReportsService = ReportsService_1 = class ReportsService {
             row.getCell('type').font = {
                 color: { argb: isIncome ? 'FF065f46' : 'FF991b1b' },
                 bold: true,
+                size: 11,
             };
             row.getCell('amount').numFmt = '#,##0.00';
             row.getCell('amount').font = {
                 bold: true,
                 color: { argb: isIncome ? 'FF059669' : 'FFdc2626' },
+                size: 11,
             };
+            row.alignment = { vertical: 'middle' };
+            row.height = 22;
         }
         sheet.addRow({});
         const totalRow = sheet.addRow({
             date: 'TOTALES',
             description: `${transactions.length} movimientos`,
         });
-        totalRow.font = { bold: true };
+        totalRow.font = { bold: true, size: 12 };
         totalRow.getCell('amount').value = totalIncome - totalExpense;
         totalRow.getCell('amount').numFmt = '#,##0.00';
-        totalRow.getCell('amount').font = { bold: true, color: { argb: 'FF385144' } };
-        totalRow.getCell('date').font = { bold: true };
-        totalRow.getCell('description').font = { bold: true };
+        totalRow.getCell('amount').font = { bold: true, color: { argb: 'FF10b981' }, size: 12 };
+        totalRow.getCell('date').font = { bold: true, size: 12 };
+        totalRow.getCell('description').font = { bold: true, size: 12 };
+        totalRow.height = 28;
         const summarySheet = workbook.addWorksheet('Resumen');
         summarySheet.addRow(['Concepto', 'Monto (ARS)']);
         summarySheet.addRow(['Total Ingresos', totalIncome]);
@@ -149,8 +154,18 @@ let ReportsService = ReportsService_1 = class ReportsService {
         summarySheet.getColumn(2).width = 20;
         summarySheet.getColumn(2).numFmt = '#,##0.00';
         const summaryHeader = summarySheet.getRow(1);
-        summaryHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        summaryHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF385144' } };
+        summaryHeader.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+        summaryHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10b981' } };
+        summaryHeader.alignment = { vertical: 'middle', horizontal: 'center' };
+        summaryHeader.height = 30;
+        for (let i = 2; i <= 5; i++) {
+            const row = summarySheet.getRow(i);
+            row.font = { size: 11 };
+            row.height = 22;
+            if (i === 5) {
+                row.font = { bold: true, size: 12, color: { argb: 'FF10b981' } };
+            }
+        }
         const buffer = await workbook.xlsx.writeBuffer();
         return Buffer.from(buffer);
     }
@@ -172,10 +187,10 @@ let ReportsService = ReportsService_1 = class ReportsService {
             { header: 'URL Archivo', key: 'urlArchivo', width: 30 },
         ];
         const headerRow = sheet.getRow(1);
-        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF385144' } };
-        headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
-        headerRow.height = 30;
+        headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
+        headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10b981' } };
+        headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        headerRow.height = 35;
         const statusColors = {
             PENDING: 'FFF59e0b',
             PAID: 'FF10b981',
@@ -199,13 +214,16 @@ let ReportsService = ReportsService_1 = class ReportsService {
                 urlArchivo: inv.urlArchivo || '-',
             });
             row.getCell('total').numFmt = '#,##0.00';
+            row.getCell('total').font = { bold: true, size: 11 };
             const statusColor = statusColors[inv.status] || 'FF6b7280';
             row.getCell('status').fill = {
                 type: 'pattern',
                 pattern: 'solid',
                 fgColor: { argb: statusColor },
             };
-            row.getCell('status').font = { bold: true, color: { argb: 'FFFFFFFF' } };
+            row.getCell('status').font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+            row.alignment = { vertical: 'middle' };
+            row.height = 22;
         }
         const buffer = await workbook.xlsx.writeBuffer();
         return Buffer.from(buffer);
