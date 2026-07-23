@@ -19,6 +19,7 @@ interface SessionData {
   pendingTransaction: any;
   pendingInvoice: any;
   pendingInvoiceFileUrl: string | null;
+  pendingInvoiceBufferBase64: string | null;
   userId: string | null;
   workspaceId: string | null;
 }
@@ -42,7 +43,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     private clientsService: ClientsService,
     private workspacesService: WorkspacesService,
     private cache: RedisCacheService,
-  ) {}
+  ) { }
 
   private escapeMarkdown(text: string): string {
     return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&');
@@ -125,6 +126,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
           pendingTransaction: null,
           pendingInvoice: null,
           pendingInvoiceFileUrl: null,
+          pendingInvoiceBufferBase64: null,
           userId: null,
           workspaceId: null,
         }),
@@ -167,6 +169,18 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
   private setupHandlers() {
     this.bot.command('start', async (ctx) => {
       await this.handleStart(ctx);
+    });
+
+    this.bot.command('ayuda', async (ctx) => {
+      await this.handleAyuda(ctx);
+    });
+
+    this.bot.command('modo', async (ctx) => {
+      await this.handleModeSelection(ctx);
+    });
+
+    this.bot.command('dividir', async (ctx) => {
+      await this.handleSplitInput(ctx);
     });
 
     this.bot.callbackQuery('btn_balance', async (ctx) => {
@@ -221,6 +235,41 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
 
     this.bot.callbackQuery('main_menu', async (ctx) => {
       await this.handleMainMenu(ctx);
+    });
+
+    this.bot.callbackQuery('main_balance', async (ctx) => {
+      await ctx.answerCallbackQuery();
+      await this.handleBalance(ctx);
+    });
+
+    this.bot.callbackQuery('main_expenses', async (ctx) => {
+      await ctx.answerCallbackQuery();
+      await this.handleGastos(ctx);
+    });
+
+    this.bot.callbackQuery('main_income', async (ctx) => {
+      await ctx.answerCallbackQuery();
+      await this.handleIngresos(ctx);
+    });
+
+    this.bot.callbackQuery('main_split', async (ctx) => {
+      await ctx.answerCallbackQuery();
+      await this.handleSplitInput(ctx);
+    });
+
+    this.bot.callbackQuery('main_invoices', async (ctx) => {
+      await ctx.answerCallbackQuery();
+      await this.handleInvoiceHelp(ctx);
+    });
+
+    this.bot.callbackQuery('main_help', async (ctx) => {
+      await ctx.answerCallbackQuery();
+      await this.handleAyuda(ctx);
+    });
+
+    this.bot.callbackQuery('main_mode', async (ctx) => {
+      await ctx.answerCallbackQuery();
+      await this.handleModeSelection(ctx);
     });
 
     this.bot.callbackQuery(/^confirm_(.+)/, async (ctx) => {
@@ -352,12 +401,18 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
           issueDate,
           dueDate,
           totalAmount: extracted.total,
+          netAmount: extracted.neto || undefined,
+          ivaPercentage: extracted.ivaPorcentaje || undefined,
+          ivaAmount: extracted.ivaMonto || undefined,
           status: 'PENDING',
           clientId: clientId || '',
           urlArchivo: ctx.session.pendingInvoiceFileUrl || null,
-        });
+          file: ctx.session.pendingInvoiceBufferBase64 ? Buffer.from(ctx.session.pendingInvoiceBufferBase64, 'base64') : undefined,
+          fileMimeType: ctx.session.pendingInvoiceFileUrl ? (ctx.session.pendingInvoiceFileUrl.includes('.pdf') ? 'application/pdf' : 'image/jpeg') : undefined,
+        } as any);
         ctx.session.pendingInvoice = null;
         ctx.session.pendingInvoiceFileUrl = null;
+        ctx.session.pendingInvoiceBufferBase64 = null;
         ctx.session.state = 'idle';
         await ctx.editMessageText(
           `✅ *Factura registrada exitosamente*\n\n` +
@@ -376,6 +431,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       ctx.session.state = 'idle';
       ctx.session.pendingInvoice = null;
       ctx.session.pendingInvoiceFileUrl = null;
+      ctx.session.pendingInvoiceBufferBase64 = null;
       await ctx.answerCallbackQuery();
       await ctx.editMessageText('❌ Factura cancelada.');
     });
@@ -387,6 +443,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       ctx.session.pendingTransaction = null;
       ctx.session.pendingInvoice = null;
       ctx.session.pendingInvoiceFileUrl = null;
+      ctx.session.pendingInvoiceBufferBase64 = null;
       ctx.session.state = 'idle';
       await ctx.reply(
         `📝 *Nuevo movimiento*\n\n` +
@@ -512,7 +569,8 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
           `Espacio activo: *${this.escapeMarkdown(workspaces[0].name)}* (${modeLabel})\n\n` +
           `Podés registrar movimientos escribiéndolos directamente.\n` +
           `Usá los botones del menú para navegar.`,
-          { parse_mode: 'Markdown',
+          {
+            parse_mode: 'Markdown',
             reply_markup: {
               inline_keyboard: [[
                 { text: '🏠 Ir al menú principal', callback_data: 'main_menu' }
@@ -535,7 +593,8 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       `2. Copiá el siguiente ID y pegalo en el campo de texto:\n\n` +
       `\`${telegramId}\`\n\n` +
       `¡Después vas a poder registrar gastos, ingresos y facturas desde acá!`,
-      { parse_mode: 'Markdown',
+      {
+        parse_mode: 'Markdown',
         reply_markup: {
           inline_keyboard: [[
             { text: '🏠 Ir al menú principal', callback_data: 'main_menu' }
@@ -974,6 +1033,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       ctx.session.state = 'awaiting_invoice_confirm';
 
       const totalFormatted = extracted.total.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+      const currentWorkspaceId = workspace.id;
 
       await ctx.reply(
         `📋 *Datos extraídos de la factura:*\n\n` +
@@ -990,7 +1050,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
           parse_mode: 'Markdown',
           reply_markup: {
             inline_keyboard: [[
-              { text: '✅ Confirmar', callback_data: `invoice_confirm_${workspace.id}` },
+              { text: '✅ Confirmar', callback_data: `invoice_confirm_${currentWorkspaceId}` },
               { text: '❌ Cancelar', callback_data: 'invoice_cancel' },
             ]],
           },
@@ -1049,6 +1109,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
       ctx.session.state = 'awaiting_invoice_confirm';
 
       const totalFormatted = extracted.total.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
+      const currentWorkspaceId = workspace.id;
 
       await ctx.reply(
         `📋 *Datos extraídos de la factura:*\n\n` +
@@ -1065,7 +1126,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
           parse_mode: 'Markdown',
           reply_markup: {
             inline_keyboard: [[
-              { text: '✅ Confirmar', callback_data: `invoice_confirm_${workspace.id}` },
+              { text: '✅ Confirmar', callback_data: `invoice_confirm_${currentWorkspaceId}` },
               { text: '❌ Cancelar', callback_data: 'invoice_cancel' },
             ]],
           },
@@ -1178,7 +1239,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
         (parsed.type === 'INCOME' && c.type === 'INCOME'))
       .slice(0, 8);
 
-const keyboard: any[][] = relevantCats.map(c => [{
+    const keyboard: any[][] = relevantCats.map(c => [{
       text: `${c.icon || '🏷️'} ${c.name}`,
       callback_data: `cat_${c.id}`,
     }]);

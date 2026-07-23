@@ -15,6 +15,7 @@ interface SessionData {
     pendingTransaction: any;
     pendingInvoice: any;
     pendingInvoiceFileUrl: string | null;
+    pendingInvoiceBufferBase64: string | null;
     userId: string | null;
     workspaceId: string | null;
 }
