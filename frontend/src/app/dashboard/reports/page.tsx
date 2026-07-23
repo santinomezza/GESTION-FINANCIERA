@@ -37,7 +37,6 @@ export default function ReportsPage() {
         responseType: 'blob'
       })
 
-      // Descargar archivo
       const blob = new Blob([response.data])
       const downloadUrl = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -49,8 +48,14 @@ export default function ReportsPage() {
       window.URL.revokeObjectURL(downloadUrl)
 
       toast({ title: 'Reporte generado con éxito', type: 'success' })
-    } catch (error) {
-      toast({ title: 'Error al exportar', description: 'Intenta nuevamente', type: 'error' })
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Error al exportar';
+      toast({ 
+        title: 'Error al exportar', 
+        description: errorMessage, 
+        type: 'error' 
+      })
+      console.error('Error exportando reporte:', error)
     } finally {
       setIsExportingCSV(false)
       setIsExportingExcel(false)

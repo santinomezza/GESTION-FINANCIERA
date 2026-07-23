@@ -217,6 +217,7 @@ export class ReportsService {
     };
 
     for (const inv of invoices) {
+      const invAny = inv as any;
       const fileUrl = inv.file
         ? `/api/invoices/file/${inv.id}`
         : (inv.urlArchivo || '-');
@@ -225,8 +226,8 @@ export class ReportsService {
         invoiceNumber: inv.invoiceNumber,
         client: inv.client?.name || 'Sin cliente',
         issueDate: format(new Date(inv.issueDate), 'dd/MM/yyyy'),
-        netAmount: inv.netAmount != null ? Number(inv.netAmount) : Number(inv.totalAmount) / 1.21,
-        ivaPercentage: inv.ivaPercentage != null ? `${inv.ivaPercentage}%` : '21%',
+        netAmount: invAny.netAmount != null ? Number(invAny.netAmount) : Number(inv.totalAmount) / 1.21,
+        ivaPercentage: invAny.ivaPercentage != null ? `${invAny.ivaPercentage}%` : '21%',
         total: Number(inv.totalAmount),
         status: statusLabels[inv.status] || inv.status,
         url: fileUrl,

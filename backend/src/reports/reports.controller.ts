@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Res, UseGuards, Logger } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiHeader } from '@nestjs/swagger';
 import { ReportsService } from './reports.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -19,6 +19,7 @@ import { format } from 'date-fns';
 })
 @Controller('reports')
 export class ReportsController {
+  private readonly logger = new Logger(ReportsController.name);
   constructor(private reportsService: ReportsService) {}
 
   @Get('export/csv')
@@ -29,11 +30,16 @@ export class ReportsController {
     @Query() filters: any,
     @Res() res: Response,
   ) {
-    const csv = await this.reportsService.generateCSV(userId, workspaceId, filters);
-    const filename = `gestionar2_${format(new Date(), 'yyyyMMdd')}.csv`;
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send('\uFEFF' + csv);
+    try {
+      const csv = await this.reportsService.generateCSV(userId, workspaceId, filters);
+      const filename = `gestionar2_${format(new Date(), 'yyyyMMdd')}.csv`;
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send('\uFEFF' + csv);
+    } catch (err: any) {
+      this.logger.error('Error exportando CSV:', err);
+      res.status(500).json({ message: err.message || 'Error al exportar CSV' });
+    }
   }
 
   @Get('export/excel')
@@ -44,11 +50,16 @@ export class ReportsController {
     @Query() filters: any,
     @Res() res: Response,
   ) {
-    const buffer = await this.reportsService.generateExcel(userId, workspaceId, filters);
-    const filename = `gestionar2_${format(new Date(), 'yyyyMMdd')}.xlsx`;
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(buffer);
+    try {
+      const buffer = await this.reportsService.generateExcel(userId, workspaceId, filters);
+      const filename = `gestionar2_${format(new Date(), 'yyyyMMdd')}.xlsx`;
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(buffer);
+    } catch (err: any) {
+      this.logger.error('Error exportando Excel:', err);
+      res.status(500).json({ message: err.message || 'Error al exportar Excel' });
+    }
   }
 
   @Get('export/invoices/excel')
@@ -59,10 +70,15 @@ export class ReportsController {
     @Query() filters: any,
     @Res() res: Response,
   ) {
-    const buffer = await this.reportsService.generateInvoicesExcel(userId, workspaceId, filters);
-    const filename = `facturas_${format(new Date(), 'yyyyMMdd')}.xlsx`;
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(buffer);
+    try {
+      const buffer = await this.reportsService.generateInvoicesExcel(userId, workspaceId, filters);
+      const filename = `facturas_${format(new Date(), 'yyyyMMdd')}.xlsx`;
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(buffer);
+    } catch (err: any) {
+      this.logger.error('Error exportando facturas Excel:', err);
+      res.status(500).json({ message: err.message || 'Error al exportar facturas' });
+    }
   }
 }
