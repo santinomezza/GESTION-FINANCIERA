@@ -19,6 +19,8 @@ let AiService = AiService_1 = class AiService {
         this.config = config;
         this.logger = new common_1.Logger(AiService_1.name);
         this.geminiModel = null;
+        this.openaiKey = null;
+        this.anthropicKey = null;
         const geminiKey = this.config.get('gemini.apiKey');
         if (geminiKey) {
             try {
@@ -31,6 +33,14 @@ let AiService = AiService_1 = class AiService {
                 this.logger.warn('Gemini no disponible:', err.message);
             }
         }
+        this.openaiKey = this.config.get('openai.apiKey') || null;
+        if (this.openaiKey) {
+            this.logger.log('OpenAI GPT-4 Vision disponible como respaldo');
+        }
+        this.anthropicKey = this.config.get('anthropic.apiKey') || null;
+        if (this.anthropicKey) {
+            this.logger.log('Anthropic Claude disponible como respaldo');
+        }
     }
     async extractInvoice(fileBuffer, mimeType) {
         const crypto = require('crypto');
@@ -42,20 +52,193 @@ let AiService = AiService_1 = class AiService {
             return cached;
         }
         let result;
-        try {
-            this.logger.log('Intentando extracción local...');
+        if (mimeType.startsWith('image/')) {
+            try {
+                this.logger.log('Intentando extracción con IA avanzada (imagen)...');
+                result = await this.extractWithAdvancedAI(fileBuffer, mimeType);
+                this.logger.log('Extracción con IA exitosa');
+            }
+            catch (aiError) {
+                this.logger.warn('IA avanzada falló, intentando extracción local...', aiError);
+                result = await this.extractInvoiceLocally(fileBuffer, mimeType);
+            }
+        }
+        else {
+            this.logger.log('Intentando extracción local (PDF)...');
             result = await this.extractInvoiceLocally(fileBuffer, mimeType);
             this.logger.log('Extracción local exitosa');
         }
-        catch (localError) {
-            this.logger.warn('Extracción local falló, intentando con Gemini...', localError);
-            if (!this.geminiModel) {
-                throw new Error('No se pudo extraer datos de la factura. Verificá que la imagen sea clara y legible.');
-            }
-            result = await this.extractInvoiceWithGemini(fileBuffer, mimeType);
-        }
         await this.setCachedExtraction(cacheKey, result, 3600);
         return result;
+    }
+    async extractWithAdvancedAI(fileBuffer, mimeType) {
+        if (this.openaiKey) {
+            try {
+                this.logger.log('Intentando con OpenAI GPT-4 Vision...');
+                return await this.extractWithOpenAI(fileBuffer, mimeType);
+            }
+            catch (error) {
+                this.logger.warn('OpenAI falló, intentando con Claude...', error);
+            }
+        }
+        if (this.anthropicKey) {
+            try {
+                this.logger.log('Intentando con Anthropic Claude...');
+                return await this.extractWithAnthropic(fileBuffer, mimeType);
+            }
+            catch (error) {
+                this.logger.warn('Claude falló, intentando con Gemini...', error);
+            }
+        }
+        if (this.geminiModel) {
+            try {
+                this.logger.log('Intentando con Gemini...');
+                return await this.extractInvoiceWithGemini(fileBuffer, mimeType);
+            }
+            catch (error) {
+                this.logger.warn('Gemini falló:', error);
+            }
+        }
+        throw new Error('Todas las IAs fallaron. Verificá las API keys configuradas.');
+    }
+    async extractWithOpenAI(fileBuffer, mimeType) {
+        const base64 = fileBuffer.toString('base64');
+        const response = await axios_1.default.post('https://api.openai.com/v1/chat/completions', {
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: `Analiza esta factura argentina y extrae SOLO JSON válido con estos campos:
+                - fecha (YYYY-MM-DD)
+                - razon_social (nombre del cliente)
+                - cuit (formato XX-XXXXXXXX-X)
+                - numero_ticket (número de factura)
+                - importe_neto (número decimal)
+                - iva_21 (número decimal)
+                - total (número decimal)
+                
+                Responde SOLO con JSON, sin markdown.`,
+                        },
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: `data:${mimeType};base64,${base64}`,
+                            },
+                        },
+                    ],
+                },
+            ],
+            max_tokens: 1000,
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.openaiKey}`,
+            },
+        });
+        const content = response.data.choices[0]?.message?.content;
+        if (!content)
+            throw new Error('OpenAI no devolvió respuesta');
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (!jsonMatch)
+            throw new Error('OpenAI no devolvió JSON válido');
+        const parsed = JSON.parse(jsonMatch[0]);
+        return this.formatExtractedInvoice(parsed);
+    }
+    async extractWithAnthropic(fileBuffer, mimeType) {
+        const base64 = fileBuffer.toString('base64');
+        const response = await axios_1.default.post('https://api.anthropic.com/v1/messages', {
+            model: 'claude-3-5-sonnet-20240620',
+            max_tokens: 1000,
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'image',
+                            source: {
+                                type: 'base64',
+                                media_type: mimeType,
+                                data: base64,
+                            },
+                        },
+                        {
+                            type: 'text',
+                            text: `Analiza esta factura argentina y extrae SOLO JSON válido con estos campos:
+                - fecha (YYYY-MM-DD)
+                - razon_social (nombre del cliente)
+                - cuit (formato XX-XXXXXXXX-X)
+                - numero_ticket (número de factura)
+                - importe_neto (número decimal)
+                - iva_21 (número decimal)
+                - total (número decimal)
+                
+                Responde SOLO con JSON, sin markdown.`,
+                        },
+                    ],
+                },
+            ],
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.anthropicKey,
+                'anthropic-version': '2023-06-01',
+            },
+        });
+        const content = response.data.content[0]?.text;
+        if (!content)
+            throw new Error('Claude no devolvió respuesta');
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (!jsonMatch)
+            throw new Error('Claude no devolvió JSON válido');
+        const parsed = JSON.parse(jsonMatch[0]);
+        return this.formatExtractedInvoice(parsed);
+    }
+    formatExtractedInvoice(parsed) {
+        const fecha = this.parseDate(parsed.fecha);
+        const razonSocial = this.cleanRazonSocial(parsed.razon_social);
+        let confidenceScore = 0;
+        const maxScore = 10;
+        if (fecha)
+            confidenceScore += 2;
+        if (razonSocial)
+            confidenceScore += 1.5;
+        if (parsed.cuit)
+            confidenceScore += 2;
+        if (parsed.numero_ticket)
+            confidenceScore += 1.5;
+        if (parsed.total)
+            confidenceScore += 2.5;
+        if (parsed.importe_neto)
+            confidenceScore += 1.5;
+        if (parsed.iva_21)
+            confidenceScore += 0.5;
+        const total = parsed.total ? parseFloat(parsed.total) : null;
+        const neto = parsed.importe_neto ? parseFloat(parsed.importe_neto) : null;
+        const iva = parsed.iva_21 ? parseFloat(parsed.iva_21) : null;
+        if (total && neto && iva) {
+            const calculatedTotal = neto + iva;
+            const tolerance = total * 0.05;
+            if (Math.abs(calculatedTotal - total) <= tolerance) {
+                confidenceScore += 1;
+            }
+        }
+        const confidence = Math.min(confidenceScore / maxScore, 1);
+        return {
+            fecha: fecha,
+            cliente: razonSocial,
+            cuit: parsed.cuit || null,
+            razonSocial: razonSocial,
+            numeroTicket: parsed.numero_ticket || null,
+            neto: neto,
+            ivaPorcentaje: parsed.iva_21 ? 21 : null,
+            ivaMonto: iva,
+            total: total,
+            confidence: confidence,
+            rawText: JSON.stringify(parsed),
+        };
     }
     async extractInvoiceLocally(fileBuffer, mimeType) {
         let text = '';
@@ -86,27 +269,8 @@ let AiService = AiService_1 = class AiService {
         }
     }
     async extractTextFromImage(buffer) {
-        const base64 = buffer.toString('base64');
-        if (this.geminiModel) {
-            try {
-                const response = await this.geminiModel.generateContent([
-                    {
-                        text: 'Extrae el texto de esta imagen de factura. Solo devuelve el texto plano sin formato.',
-                    },
-                    {
-                        inlineData: {
-                            mimeType: 'image/jpeg',
-                            data: base64,
-                        },
-                    },
-                ]);
-                return response.response.candidates[0]?.content?.parts[0]?.text || '';
-            }
-            catch (error) {
-                this.logger.warn('Error en OCR con Gemini:', error);
-            }
-        }
-        throw new Error('No se pudo extraer texto de la imagen');
+        this.logger.warn('Extracción de imágenes sin OCR local. Se recomienda usar PDFs.');
+        throw new Error('Para extracción de facturas sin límites, usá archivos PDF. Las imágenes requieren OCR avanzado.');
     }
     parseInvoiceText(text) {
         const result = {
@@ -119,8 +283,18 @@ let AiService = AiService_1 = class AiService {
             ivaPorcentaje: null,
             ivaMonto: null,
             total: null,
-            confidence: 0.7,
+            confidence: 0.75,
             rawText: text,
+        };
+        let confidenceScore = 0;
+        const maxScore = 10;
+        const weights = {
+            fecha: 2,
+            cuit: 2,
+            numeroTicket: 1.5,
+            total: 2.5,
+            neto: 1.5,
+            iva: 0.5,
         };
         const fechaPatterns = [
             /(\d{2}[\/\-\.]\d{2}[\/\-\.]\d{4})/,
@@ -130,12 +304,14 @@ let AiService = AiService_1 = class AiService {
             const match = text.match(pattern);
             if (match) {
                 result.fecha = this.parseDate(match[1]);
+                confidenceScore += weights.fecha;
                 break;
             }
         }
         const cuitMatch = text.match(/(\d{2}[-\s]?\d{8}[-\s]?\d{1})/);
         if (cuitMatch) {
             result.cuit = cuitMatch[1].replace(/\s/g, '-');
+            confidenceScore += weights.cuit;
         }
         const numeroPatterns = [
             /(?:N°|Nº|Numero|Número|Factura|Comprobante)[:\s]*([A-Z0-9\-]+)/i,
@@ -145,43 +321,64 @@ let AiService = AiService_1 = class AiService {
             const match = text.match(pattern);
             if (match) {
                 result.numeroTicket = match[1].trim();
+                confidenceScore += weights.numeroTicket;
                 break;
             }
         }
         const amountPatterns = {
-            total: /(?:Total|TOTAL|Importe Total|Monto Total)[:\s]*\$?\s*([\d.,]+)/i,
-            neto: /(?:Neto|NETO|Subtotal|SUBTOTAL)[:\s]*\$?\s*([\d.,]+)/i,
-            iva: /(?:IVA|I\.V\.A\.)[:\s]*\$?\s*([\d.,]+)/i,
+            total: /(?:Total|TOTAL|Importe Total|Monto Total|Importe)[:\s]*\$?\s*([\d.,]+)/i,
+            neto: /(?:Neto|NETO|Subtotal|SUBTOTAL|Base imponible)[:\s]*\$?\s*([\d.,]+)/i,
+            iva: /(?:IVA|I\.V\.A\.|I\.V\.A)[:\s]*\$?\s*([\d.,]+)/i,
         };
         const totalMatch = text.match(amountPatterns.total);
         if (totalMatch) {
             result.total = this.parseAmount(totalMatch[1]);
+            confidenceScore += weights.total;
         }
         const netoMatch = text.match(amountPatterns.neto);
         if (netoMatch) {
             result.neto = this.parseAmount(netoMatch[1]);
+            confidenceScore += weights.neto;
         }
         const ivaMatch = text.match(amountPatterns.iva);
         if (ivaMatch) {
             result.ivaMonto = this.parseAmount(ivaMatch[1]);
             result.ivaPorcentaje = 21;
+            confidenceScore += weights.iva;
         }
-        if (!result.neto && result.total && result.ivaMonto) {
-            result.neto = result.total - result.ivaMonto;
+        if (result.total && result.neto && result.ivaMonto) {
+            const calculatedTotal = result.neto + result.ivaMonto;
+            const tolerance = result.total * 0.05;
+            if (Math.abs(calculatedTotal - result.total) <= tolerance) {
+                confidenceScore += 1;
+            }
         }
-        if (result.total && !result.ivaMonto && !result.neto) {
+        else if (result.total && !result.neto && !result.ivaMonto) {
             result.neto = result.total / 1.21;
             result.ivaMonto = result.total - result.neto;
             result.ivaPorcentaje = 21;
+            confidenceScore += 0.5;
+        }
+        else if (result.total && result.ivaMonto && !result.neto) {
+            result.neto = result.total - result.ivaMonto;
+            confidenceScore += 0.5;
         }
         const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 3);
         for (const line of lines) {
             if (line.length > 5 && line.length < 60 && !line.match(/^\d+$/) && !line.match(/^[\d\s.,]+$/)) {
-                if (!result.razonSocial) {
-                    result.razonSocial = line;
-                    result.cliente = line;
+                if (!line.match(/^(Calle|Av\.|Avenida|Dirección|Domicilio)/i)) {
+                    if (!result.razonSocial) {
+                        result.razonSocial = line;
+                        result.cliente = line;
+                        confidenceScore += 0.5;
+                        break;
+                    }
                 }
             }
+        }
+        result.confidence = Math.min(confidenceScore / maxScore, 1);
+        if (result.total && result.fecha && result.confidence < 0.75) {
+            result.confidence = 0.75;
         }
         return result;
     }
@@ -201,7 +398,6 @@ let AiService = AiService_1 = class AiService {
         }
         let response;
         let retries = 3;
-        let lastError = null;
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
                 response = await axios_1.default.post(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${this.config.get('gemini.apiKey')}`, {
@@ -240,7 +436,6 @@ let AiService = AiService_1 = class AiService {
                 break;
             }
             catch (err) {
-                lastError = err;
                 const status = err.response?.status;
                 const message = err.response?.data?.error?.message || err.message;
                 if (status === 429 && attempt < retries) {

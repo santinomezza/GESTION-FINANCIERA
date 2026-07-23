@@ -25,8 +25,14 @@ export declare class AiService {
     private config;
     private readonly logger;
     private geminiModel;
+    private openaiKey;
+    private anthropicKey;
     constructor(config: ConfigService);
     extractInvoice(fileBuffer: Buffer, mimeType: string): Promise<ExtractedInvoice>;
+    private extractWithAdvancedAI;
+    private extractWithOpenAI;
+    private extractWithAnthropic;
+    private formatExtractedInvoice;
     private extractInvoiceLocally;
     private extractTextFromPDF;
     private extractTextFromImage;
