@@ -26,6 +26,10 @@ export const metadata: Metadata = {
   title: 'GESTIONAR2 | Inteligencia Financiera',
   description: 'Sistema inteligente de gestión financiera personal y empresarial. Controlá tus ingresos, gastos y rentabilidad en tiempo real.',
   keywords: ['gestión financiera', 'finanzas personales', 'pyme', 'contabilidad', 'presupuesto'],
+  icons: {
+    icon: '/logo.svg',
+    apple: '/logo.svg',
+  },
 };
 
 export const viewport = {

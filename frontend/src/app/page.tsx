@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/useAuthStore'
-import { Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function Home() {
@@ -35,10 +34,10 @@ export default function Home() {
       >
         {/* Animated logo */}
         <div className="relative">
-          <div className="w-20 h-20 gradient-primary rounded-3xl flex items-center justify-center shadow-glow">
-            <Sparkles className="h-10 w-10 text-white" />
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-glow overflow-hidden">
+            <img src="/logo.svg" alt="GESTIONAR2 Logo" className="w-full h-full object-cover" />
           </div>
-          <div className="absolute inset-0 w-20 h-20 gradient-primary rounded-3xl animate-pulse-ring opacity-50" />
+          <div className="absolute inset-0 w-20 h-20 rounded-3xl animate-pulse-ring opacity-50" />
         </div>
 
         <div className="flex flex-col items-center gap-1.5">

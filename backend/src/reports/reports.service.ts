@@ -186,13 +186,12 @@ export class ReportsService {
     });
 
     sheet.columns = [
-      { header: 'N° Factura', key: 'invoiceNumber', width: 18 },
-      { header: 'Cliente', key: 'client', width: 25 },
-      { header: 'Fecha', key: 'issueDate', width: 12 },
-      { header: 'Importe Neto', key: 'netAmount', width: 14 },
+      { header: 'N° DE FACTURA', key: 'invoiceNumber', width: 18 },
+      { header: 'CLIENTE', key: 'client', width: 25 },
+      { header: 'FECHA', key: 'issueDate', width: 12 },
+      { header: 'IMPORTE NETO', key: 'netAmount', width: 14 },
       { header: '% IVA', key: 'ivaPercentage', width: 10 },
-      { header: 'Total (ARS)', key: 'total', width: 16 },
-      { header: 'Estado', key: 'status', width: 12 },
+      { header: 'TOTAL', key: 'total', width: 16 },
       { header: 'URL', key: 'url', width: 40 },
     ];
 
@@ -207,7 +206,7 @@ export class ReportsService {
       PAID: 'FF10b981',
       OVERDUE: 'FFef4444',
       CANCELLED: 'FF6b7280',
-    };
+    }
 
     const statusLabels: Record<string, string> = {
       PENDING: 'PENDIENTE',
@@ -229,7 +228,6 @@ export class ReportsService {
         netAmount: invAny.netAmount != null ? Number(invAny.netAmount) : Number(inv.totalAmount) / 1.21,
         ivaPercentage: invAny.ivaPercentage != null ? `${invAny.ivaPercentage}%` : '21%',
         total: Number(inv.totalAmount),
-        status: statusLabels[inv.status] || inv.status,
         url: fileUrl,
       });
 
@@ -238,15 +236,6 @@ export class ReportsService {
       row.getCell('ivaPercentage').alignment = { horizontal: 'center' };
       row.getCell('total').numFmt = '#,##0.00';
       row.getCell('total').font = { bold: true, size: 11 };
-      row.getCell('status').alignment = { horizontal: 'center' };
-
-      const statusColor = statusColors[inv.status] || 'FF6b7280';
-      row.getCell('status').fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: statusColor },
-      };
-      row.getCell('status').font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
 
       row.alignment = { vertical: 'middle' };
       row.height = 22;
