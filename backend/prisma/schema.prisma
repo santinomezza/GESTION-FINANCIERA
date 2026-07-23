@@ -344,6 +344,9 @@ model Invoice {
   issueDate     DateTime
   dueDate       DateTime
   totalAmount   Float
+  netAmount     Float?
+  ivaPercentage Float?
+  ivaAmount     Float?
   status        String // Ej: PENDING, PAID, OVERDUE, CANCELLED
   urlArchivo    String?
   file          Bytes?

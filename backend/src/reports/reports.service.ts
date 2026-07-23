@@ -189,15 +189,16 @@ export class ReportsService {
       { header: 'N° Factura', key: 'invoiceNumber', width: 18 },
       { header: 'Cliente', key: 'client', width: 25 },
       { header: 'Fecha', key: 'issueDate', width: 12 },
-      { header: 'Vencimiento', key: 'dueDate', width: 12 },
+      { header: 'Importe Neto', key: 'netAmount', width: 14 },
+      { header: '% IVA', key: 'ivaPercentage', width: 10 },
       { header: 'Total (ARS)', key: 'total', width: 16 },
       { header: 'Estado', key: 'status', width: 12 },
-      { header: 'URL Archivo', key: 'urlArchivo', width: 30 },
+      { header: 'URL', key: 'url', width: 40 },
     ];
 
     const headerRow = sheet.getRow(1);
     headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 12 };
-    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10b981' } };
+    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF064e3b' } };
     headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
     headerRow.height = 35;
 
@@ -216,18 +217,27 @@ export class ReportsService {
     };
 
     for (const inv of invoices) {
+      const fileUrl = inv.file
+        ? `/api/invoices/file/${inv.id}`
+        : (inv.urlArchivo || '-');
+
       const row = sheet.addRow({
         invoiceNumber: inv.invoiceNumber,
         client: inv.client?.name || 'Sin cliente',
         issueDate: format(new Date(inv.issueDate), 'dd/MM/yyyy'),
-        dueDate: format(new Date(inv.dueDate), 'dd/MM/yyyy'),
+        netAmount: inv.netAmount != null ? Number(inv.netAmount) : Number(inv.totalAmount) / 1.21,
+        ivaPercentage: inv.ivaPercentage != null ? `${inv.ivaPercentage}%` : '21%',
         total: Number(inv.totalAmount),
         status: statusLabels[inv.status] || inv.status,
-        urlArchivo: inv.urlArchivo || '-',
+        url: fileUrl,
       });
 
+      row.getCell('netAmount').numFmt = '#,##0.00';
+      row.getCell('netAmount').font = { size: 11 };
+      row.getCell('ivaPercentage').alignment = { horizontal: 'center' };
       row.getCell('total').numFmt = '#,##0.00';
       row.getCell('total').font = { bold: true, size: 11 };
+      row.getCell('status').alignment = { horizontal: 'center' };
 
       const statusColor = statusColors[inv.status] || 'FF6b7280';
       row.getCell('status').fill = {

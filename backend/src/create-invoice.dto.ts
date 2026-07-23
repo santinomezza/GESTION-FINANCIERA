@@ -22,6 +22,21 @@ export class CreateInvoiceDto {
     @IsNumber()
     totalAmount: number;
 
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    netAmount?: number;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    ivaPercentage?: number;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsNumber()
+    ivaAmount?: number;
+
     @ApiProperty({ enum: INVOICE_STATUSES, default: 'PENDING' })
     @IsString()
     @IsNotEmpty()
