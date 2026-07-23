@@ -13,8 +13,8 @@ export declare class NotificationsService {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }[]>;
     markRead(userId: string, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     markAllRead(userId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
@@ -34,8 +34,8 @@ export declare class NotificationsService {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }>;
     createMonthlySummary(userId: string, workspaceId: string, summaryData: any): Promise<{
         id: string;
@@ -46,8 +46,8 @@ export declare class NotificationsService {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }>;
     createCategoryLimitAlert(userId: string, categoryName: string, percentage: number, spent: number, limit: number): Promise<{
         id: string;
@@ -58,8 +58,8 @@ export declare class NotificationsService {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }>;
     createRecurringReminder(userId: string, transactionName: string, amount: number): Promise<{
         id: string;
@@ -70,8 +70,8 @@ export declare class NotificationsService {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }>;
     createAIRecommendation(userId: string, title: string, message: string, priority?: string, data?: any): Promise<{
         id: string;
@@ -82,8 +82,8 @@ export declare class NotificationsService {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }>;
     getUnreadNotifications(userId: string): Promise<{
         id: string;
@@ -94,7 +94,7 @@ export declare class NotificationsService {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }[]>;
 }

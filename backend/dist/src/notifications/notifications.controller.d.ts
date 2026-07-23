@@ -11,8 +11,8 @@ export declare class NotificationsController {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }[]>;
     getUnread(req: any): Promise<{
         id: string;
@@ -23,8 +23,8 @@ export declare class NotificationsController {
         title: string;
         message: string;
         isRead: boolean;
-        sentAt: Date | null;
         readAt: Date | null;
+        sentAt: Date | null;
     }[]>;
     getUnreadCount(req: any): Promise<number>;
     markRead(req: any, id: string): Promise<import(".prisma/client").Prisma.BatchPayload>;

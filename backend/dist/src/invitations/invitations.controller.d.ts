@@ -10,9 +10,9 @@ export declare class InvitationsController {
         createdAt: Date;
         workspaceId: string;
         createdBy: string;
-        displayName: string | null;
         expiresAt: Date;
         usedAt: Date | null;
+        displayName: string | null;
         code: string;
         maxUses: number;
         usesCount: number;
@@ -24,9 +24,9 @@ export declare class InvitationsController {
         createdAt: Date;
         workspaceId: string;
         createdBy: string;
-        displayName: string | null;
         expiresAt: Date;
         usedAt: Date | null;
+        displayName: string | null;
         code: string;
         maxUses: number;
         usesCount: number;
@@ -56,9 +56,9 @@ export declare class InvitationsController {
         createdAt: Date;
         workspaceId: string;
         createdBy: string;
-        displayName: string | null;
         expiresAt: Date;
         usedAt: Date | null;
+        displayName: string | null;
         code: string;
         maxUses: number;
         usesCount: number;
@@ -74,9 +74,9 @@ export declare class InvitationsController {
         createdAt: Date;
         workspaceId: string;
         createdBy: string;
-        displayName: string | null;
         expiresAt: Date;
         usedAt: Date | null;
+        displayName: string | null;
         code: string;
         maxUses: number;
         usesCount: number;

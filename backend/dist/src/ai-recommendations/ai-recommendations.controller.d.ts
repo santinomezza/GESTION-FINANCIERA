@@ -10,12 +10,12 @@ export declare class AIRecommendationsController {
         data: import("@prisma/client/runtime/library").JsonValue;
         workspaceId: string;
         title: string;
-        expiresAt: Date | null;
         message: string;
-        isRead: boolean;
-        readAt: Date | null;
         priority: string;
+        isRead: boolean;
         isDismissed: boolean;
+        expiresAt: Date | null;
+        readAt: Date | null;
     }[]>;
     getPending(req: any): Promise<{
         id: string;
@@ -25,12 +25,12 @@ export declare class AIRecommendationsController {
         data: import("@prisma/client/runtime/library").JsonValue;
         workspaceId: string;
         title: string;
-        expiresAt: Date | null;
         message: string;
-        isRead: boolean;
-        readAt: Date | null;
         priority: string;
+        isRead: boolean;
         isDismissed: boolean;
+        expiresAt: Date | null;
+        readAt: Date | null;
     }[]>;
     generate(req: any): Promise<any[]>;
     markAsRead(id: string, req: any): Promise<import(".prisma/client").Prisma.BatchPayload>;

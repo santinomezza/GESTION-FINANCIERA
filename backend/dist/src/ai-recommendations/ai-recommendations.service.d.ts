@@ -11,12 +11,12 @@ export declare class AIRecommendationsService {
         data: import("@prisma/client/runtime/library").JsonValue;
         workspaceId: string;
         title: string;
-        expiresAt: Date | null;
         message: string;
-        isRead: boolean;
-        readAt: Date | null;
         priority: string;
+        isRead: boolean;
         isDismissed: boolean;
+        expiresAt: Date | null;
+        readAt: Date | null;
     }[]>;
     findOne(id: string, userId: string): Promise<{
         id: string;
@@ -26,12 +26,12 @@ export declare class AIRecommendationsService {
         data: import("@prisma/client/runtime/library").JsonValue;
         workspaceId: string;
         title: string;
-        expiresAt: Date | null;
         message: string;
-        isRead: boolean;
-        readAt: Date | null;
         priority: string;
+        isRead: boolean;
         isDismissed: boolean;
+        expiresAt: Date | null;
+        readAt: Date | null;
     }>;
     create(userId: string, workspaceId: string, data: {
         type: string;
@@ -48,12 +48,12 @@ export declare class AIRecommendationsService {
         data: import("@prisma/client/runtime/library").JsonValue;
         workspaceId: string;
         title: string;
-        expiresAt: Date | null;
         message: string;
-        isRead: boolean;
-        readAt: Date | null;
         priority: string;
+        isRead: boolean;
         isDismissed: boolean;
+        expiresAt: Date | null;
+        readAt: Date | null;
     }>;
     markAsRead(id: string, userId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     dismiss(id: string, userId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
@@ -66,11 +66,11 @@ export declare class AIRecommendationsService {
         data: import("@prisma/client/runtime/library").JsonValue;
         workspaceId: string;
         title: string;
-        expiresAt: Date | null;
         message: string;
-        isRead: boolean;
-        readAt: Date | null;
         priority: string;
+        isRead: boolean;
         isDismissed: boolean;
+        expiresAt: Date | null;
+        readAt: Date | null;
     }[]>;
 }

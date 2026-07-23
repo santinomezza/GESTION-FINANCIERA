@@ -5,6 +5,9 @@ export declare class CreateInvoiceDto {
     issueDate: Date;
     dueDate: Date;
     totalAmount: number;
+    netAmount?: number;
+    ivaPercentage?: number;
+    ivaAmount?: number;
     status: InvoiceStatus;
     clientId?: string;
     urlArchivo?: string;

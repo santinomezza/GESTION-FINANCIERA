@@ -16,7 +16,7 @@ const class_validator_1 = require("class-validator");
 const INVOICE_STATUSES = ['PENDING', 'PAID', 'OVERDUE', 'CANCELLED'];
 class CreateInvoiceDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { invoiceNumber: { required: true, type: () => String }, issueDate: { required: true, type: () => Date }, dueDate: { required: true, type: () => Date }, totalAmount: { required: true, type: () => Number }, status: { required: true, type: () => Object, enum: INVOICE_STATUSES }, clientId: { required: false, type: () => String }, urlArchivo: { required: false, type: () => String }, file: { required: false, type: () => String }, fileMimeType: { required: false, type: () => String } };
+        return { invoiceNumber: { required: true, type: () => String }, issueDate: { required: true, type: () => Date }, dueDate: { required: true, type: () => Date }, totalAmount: { required: true, type: () => Number }, netAmount: { required: false, type: () => Number }, ivaPercentage: { required: false, type: () => Number }, ivaAmount: { required: false, type: () => Number }, status: { required: true, type: () => Object, enum: INVOICE_STATUSES }, clientId: { required: false, type: () => String }, urlArchivo: { required: false, type: () => String }, file: { required: false, type: () => String }, fileMimeType: { required: false, type: () => String } };
     }
 }
 exports.CreateInvoiceDto = CreateInvoiceDto;
@@ -41,6 +41,24 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], CreateInvoiceDto.prototype, "totalAmount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateInvoiceDto.prototype, "netAmount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateInvoiceDto.prototype, "ivaPercentage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateInvoiceDto.prototype, "ivaAmount", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ enum: INVOICE_STATUSES, default: 'PENDING' }),
     (0, class_validator_1.IsString)(),

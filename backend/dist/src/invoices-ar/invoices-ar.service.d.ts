@@ -12,6 +12,10 @@ export declare class InvoicesArService {
         message: string;
         factura: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            urlArchivo: string | null;
             nroFactura: string;
             tipo: string;
             fechaEmision: Date;
@@ -22,16 +26,16 @@ export declare class InvoicesArService {
             condicionFiscal: string | null;
             descripcion: string | null;
             estadoPago: string;
-            urlArchivo: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            userId: string;
             clienteId: string | null;
         };
         extracted: ExtractedInvoice;
     }>;
     createManual(userId: string, dto: CreateManualInvoiceDto): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -42,26 +46,26 @@ export declare class InvoicesArService {
         condicionFiscal: string | null;
         descripcion: string | null;
         estadoPago: string;
-        urlArchivo: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        userId: string;
         clienteId: string | null;
     }>;
     findAll(userId: string): Promise<({
         cliente: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             userId: string;
             cuit: string;
             razonSocial: string;
-            email: string | null;
             telefono: string | null;
             direccion: string | null;
         };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -72,26 +76,26 @@ export declare class InvoicesArService {
         condicionFiscal: string | null;
         descripcion: string | null;
         estadoPago: string;
-        urlArchivo: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        userId: string;
         clienteId: string | null;
     })[]>;
     findOne(userId: string, id: string): Promise<{
         cliente: {
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             userId: string;
             cuit: string;
             razonSocial: string;
-            email: string | null;
             telefono: string | null;
             direccion: string | null;
         };
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -102,14 +106,14 @@ export declare class InvoicesArService {
         condicionFiscal: string | null;
         descripcion: string | null;
         estadoPago: string;
-        urlArchivo: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        userId: string;
         clienteId: string | null;
     }>;
     updateEstado(userId: string, id: string, estadoPago: 'pendiente' | 'pagada' | 'parcial' | 'vencida'): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -120,14 +124,14 @@ export declare class InvoicesArService {
         condicionFiscal: string | null;
         descripcion: string | null;
         estadoPago: string;
-        urlArchivo: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        userId: string;
         clienteId: string | null;
     }>;
     remove(userId: string, id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        urlArchivo: string | null;
         nroFactura: string;
         tipo: string;
         fechaEmision: Date;
@@ -138,10 +142,6 @@ export declare class InvoicesArService {
         condicionFiscal: string | null;
         descripcion: string | null;
         estadoPago: string;
-        urlArchivo: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        userId: string;
         clienteId: string | null;
     }>;
     exportCSV(userId: string): Promise<string>;
