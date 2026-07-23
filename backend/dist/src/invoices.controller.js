@@ -83,9 +83,13 @@ let InvoicesController = InvoicesController_1 = class InvoicesController {
         let clientId;
         if (extracted.cliente || extracted.razonSocial || extracted.cuit) {
             const clientName = extracted.razonSocial || extracted.cliente;
+            this.logger.debug(`Extracción IA - cliente: "${extracted.cliente}", razonSocial: "${extracted.razonSocial}", cuit: "${extracted.cuit}"`);
+            this.logger.debug(`Nombre de cliente a buscar/crear: "${clientName}"`);
             if (clientName) {
                 const existingClients = await this.clientsService.findAll(workspaceId);
+                this.logger.debug(`Clientes existentes en workspace: ${existingClients.map(c => `"${c.name}" (${c.cuit})`).join(', ')}`);
                 const existingClient = existingClients.find((c) => c.cuit === extracted.cuit || c.name.toLowerCase() === clientName.toLowerCase());
+                this.logger.debug(`Cliente encontrado: ${existingClient ? `"${existingClient.name}" (${existingClient.id})` : 'Ninguno'}`);
                 if (existingClient) {
                     clientId = existingClient.id;
                 }
@@ -94,6 +98,7 @@ let InvoicesController = InvoicesController_1 = class InvoicesController {
                         name: clientName,
                         cuit: extracted.cuit || undefined,
                     });
+                    this.logger.debug(`Cliente creado: "${newClient.name}" (${newClient.id})`);
                     clientId = newClient.id;
                 }
             }
