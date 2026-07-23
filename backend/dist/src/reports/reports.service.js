@@ -21,7 +21,7 @@ let ReportsService = ReportsService_1 = class ReportsService {
         this.logger = new common_1.Logger(ReportsService_1.name);
     }
     async getTransactionsForReport(userId, workspaceId, filters) {
-        const where = { userId, workspaceId, deletedAt: null };
+        const where = { workspaceId, deletedAt: null };
         if (filters.type)
             where.type = filters.type;
         if (filters.categoryId)

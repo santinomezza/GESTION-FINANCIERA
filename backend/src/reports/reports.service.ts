@@ -11,7 +11,7 @@ export class ReportsService {
   constructor(private prisma: PrismaService) { }
 
   async getTransactionsForReport(userId: string, workspaceId: string, filters: any) {
-    const where: any = { userId, workspaceId, deletedAt: null };
+    const where: any = { workspaceId, deletedAt: null };
 
     if (filters.type) where.type = filters.type;
     if (filters.categoryId) where.categoryId = filters.categoryId;
