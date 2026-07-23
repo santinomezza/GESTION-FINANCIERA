@@ -70,19 +70,16 @@ export class AiService {
 
     let result: ExtractedInvoice;
 
-    if (mimeType.startsWith('image/')) {
-      try {
-        this.logger.log('Intentando extracción con IA avanzada (imagen)...');
-        result = await this.extractWithAdvancedAI(fileBuffer, mimeType);
-        this.logger.log('Extracción con IA exitosa');
-      } catch (aiError) {
-        this.logger.warn('IA avanzada falló, intentando extracción local...', aiError);
-        result = await this.extractInvoiceLocally(fileBuffer, mimeType);
-      }
-    } else {
-      this.logger.log('Intentando extracción local (PDF)...');
+    if (mimeType === 'application/pdf') {
+      // PDFs: extracción local directa (sin límites, rápida)
+      this.logger.log('Procesando PDF con extracción local...');
       result = await this.extractInvoiceLocally(fileBuffer, mimeType);
-      this.logger.log('Extracción local exitosa');
+    } else if (mimeType.startsWith('image/')) {
+      // Imágenes: usar Gemini directamente (como antes)
+      this.logger.log('Procesando imagen con Gemini...');
+      result = await this.extractInvoiceWithGemini(fileBuffer, mimeType);
+    } else {
+      throw new Error('Tipo de archivo no soportado');
     }
 
     await this.setCachedExtraction(cacheKey, result, 3600);
@@ -295,7 +292,7 @@ export class AiService {
   private async extractTextFromPDF(buffer: Buffer): Promise<string> {
     try {
       const pdfParse = require('pdf-parse');
-      const data = await pdfParse(buffer);
+      const data = await pdfParse.default ? pdfParse.default(buffer) : pdfParse(buffer);
       return data.text;
     } catch (error) {
       this.logger.error('Error parseando PDF:', error);
@@ -319,19 +316,19 @@ export class AiService {
       ivaPorcentaje: null,
       ivaMonto: null,
       total: null,
-      confidence: 0.75,
+      confidence: 0.80,
       rawText: text,
     };
 
     let confidenceScore = 0;
     const maxScore = 10;
     const weights = {
-      fecha: 2,
-      cuit: 2,
-      numeroTicket: 1.5,
-      total: 2.5,
-      neto: 1.5,
-      iva: 0.5,
+      fecha: 2.5,
+      cuit: 2.5,
+      numeroTicket: 2,
+      total: 3,
+      neto: 2,
+      iva: 1,
     };
 
     const fechaPatterns = [
@@ -393,18 +390,18 @@ export class AiService {
 
     if (result.total && result.neto && result.ivaMonto) {
       const calculatedTotal = result.neto + result.ivaMonto;
-      const tolerance = result.total * 0.05;
+      const tolerance = result.total * 0.02;
       if (Math.abs(calculatedTotal - result.total) <= tolerance) {
-        confidenceScore += 1;
+        confidenceScore += 2;
       }
     } else if (result.total && !result.neto && !result.ivaMonto) {
       result.neto = result.total / 1.21;
       result.ivaMonto = result.total - result.neto;
       result.ivaPorcentaje = 21;
-      confidenceScore += 0.5;
+      confidenceScore += 1;
     } else if (result.total && result.ivaMonto && !result.neto) {
       result.neto = result.total - result.ivaMonto;
-      confidenceScore += 0.5;
+      confidenceScore += 1;
     }
 
     const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 3);
@@ -423,8 +420,8 @@ export class AiService {
 
     result.confidence = Math.min(confidenceScore / maxScore, 1);
 
-    if (result.total && result.fecha && result.confidence < 0.75) {
-      result.confidence = 0.75;
+    if (result.total && result.fecha && result.confidence < 0.80) {
+      result.confidence = 0.80;
     }
 
     return result;
