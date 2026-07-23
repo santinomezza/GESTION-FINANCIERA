@@ -212,21 +212,21 @@ export default function InvoicesPage() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-8"
+      className="space-y-4 md:space-y-8"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Facturas</h1>
-          <p className="text-muted-foreground mt-2">Gestioná tus facturas y comprobantes</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Facturas</h1>
+          <p className="text-muted-foreground mt-1 md:mt-2 text-sm md:text-base">Gestioná tus facturas y comprobantes</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => window.location.href = '/dashboard/invoices/upload'}>
+          <Button variant="outline" onClick={() => window.location.href = '/dashboard/invoices/upload'} className="flex-1 md:flex-none">
             <Upload className="h-4 w-4 mr-2" />
-            Subir Factura
+            <span className="md:inline">Subir Factura</span>
           </Button>
-          <Button onClick={openCreateDialog}>
+          <Button onClick={openCreateDialog} className="flex-1 md:flex-none">
             <Plus className="h-4 w-4 mr-2" />
-            Nueva Factura
+            <span className="md:inline">Nueva Factura</span>
           </Button>
         </div>
       </div>
@@ -240,87 +240,90 @@ export default function InvoicesPage() {
           ) : invoices && invoices.length > 0 ? (
             <div className="divide-y">
               {invoices.map((invoice: Invoice) => (
-                <div key={invoice.id} className="flex items-center justify-between p-4 gap-4">
-                  <div className="flex items-center gap-4 min-w-0">
+                <div key={invoice.id} className="p-3 md:p-4 gap-3 md:gap-4">
+                  <div className="flex items-start gap-3 md:gap-4">
                     <div className="p-2 bg-primary/10 rounded-lg shrink-0">
                       <FileText className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="min-w-0">
-                      <p className="font-medium truncate">{invoice.invoiceNumber}</p>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {invoice.client?.name || 'Sin cliente'} · {new Date(invoice.issueDate).toLocaleDateString('es-AR')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold">${Number(invoice.totalAmount).toLocaleString('es-AR')}</span>
-                    <Badge className={getStatusColor(invoice.status)}>
-                      {getStatusLabel(invoice.status)}
-                    </Badge>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
-                        onClick={async () => {
-                          try {
-                            const response = await api.get(`/invoices/file/${invoice.id}`, {
-                              responseType: 'blob',
-                            });
-                            const blob = new Blob([response.data], {
-                              type: (response.headers['content-type'] as string) || 'application/octet-stream',
-                            });
-                            const url = window.URL.createObjectURL(blob);
-                            window.open(url, '_blank');
-                            // Limpiar el ObjectURL después de un tiempo para liberar memoria
-                            setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-                          } catch (err: any) {
-                            toast({
-                              title: 'Error',
-                              description: err.response?.data?.message || 'No se pudo cargar el archivo',
-                              type: 'error',
-                            });
-                          }
-                        }}
-                        title="Ver factura"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      {invoice.status !== 'PAID' && (
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-medium truncate text-sm md:text-base">{invoice.invoiceNumber}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground truncate">
+                            {invoice.client?.name || 'Sin cliente'} · {new Date(invoice.issueDate).toLocaleDateString('es-AR')}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 md:gap-3">
+                          <span className="font-semibold text-sm md:text-base">${Number(invoice.totalAmount).toLocaleString('es-AR')}</span>
+                          <Badge className={`${getStatusColor(invoice.status)} text-xs`}>
+                            {getStatusLabel(invoice.status)}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="flex gap-1 mt-2 md:mt-0">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-500/10"
-                          onClick={() => payMutation.mutate(invoice.id)}
-                          disabled={payMutation.isPending}
-                          title="Marcar como pagada"
+                          className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-500/10"
+                          onClick={async () => {
+                            try {
+                              const response = await api.get(`/invoices/file/${invoice.id}`, {
+                                responseType: 'blob',
+                              });
+                              const blob = new Blob([response.data], {
+                                type: (response.headers['content-type'] as string) || 'application/octet-stream',
+                              });
+                              const url = window.URL.createObjectURL(blob);
+                              window.open(url, '_blank');
+                              setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+                            } catch (err: any) {
+                              toast({
+                                title: 'Error',
+                                description: err.response?.data?.message || 'No se pudo cargar el archivo',
+                                type: 'error',
+                              });
+                            }
+                          }}
+                          title="Ver factura"
                         >
-                          <CheckCircle className="h-4 w-4" />
+                          <Eye className="h-4 w-4" />
                         </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => openEditDialog(invoice)}
-                        title="Editar"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => {
-                          if (confirm('¿Eliminar esta factura?')) {
-                            deleteMutation.mutate(invoice.id)
-                          }
-                        }}
-                        disabled={deleteMutation.isPending}
-                        title="Eliminar"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                        {invoice.status !== 'PAID' && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-500/10"
+                            onClick={() => payMutation.mutate(invoice.id)}
+                            disabled={payMutation.isPending}
+                            title="Marcar como pagada"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => openEditDialog(invoice)}
+                          title="Editar"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => {
+                            if (confirm('¿Eliminar esta factura?')) {
+                              deleteMutation.mutate(invoice.id)
+                            }
+                          }}
+                          disabled={deleteMutation.isPending}
+                          title="Eliminar"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

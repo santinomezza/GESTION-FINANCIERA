@@ -53,28 +53,28 @@ export default function InvoiceUploadPage() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-8"
+      className="space-y-4 md:space-y-8"
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 md:gap-4">
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Subir Factura</h1>
-          <p className="text-muted-foreground">Subí un PDF o imagen de factura para extraer datos automáticamente</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Subir Factura</h1>
+          <p className="text-muted-foreground text-sm md:text-base">Subí un PDF o imagen de factura para extraer datos automáticamente</p>
         </div>
       </div>
 
       <Card className="border-none shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+            <Upload className="h-4 w-4 md:h-5 md:w-5" />
             Subir archivo
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6">
           <div className="space-y-2">
-            <Label>Seleccioná tu factura</Label>
+            <Label className="text-sm">Seleccioná tu factura</Label>
             <div className="flex gap-2">
               <Input
                 ref={fileInput}
@@ -87,7 +87,7 @@ export default function InvoiceUploadPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full h-12 border-dashed"
+                className="w-full h-10 md:h-12 border-dashed"
                 onClick={() => fileInput.current?.click()}
               >
                 <Upload className="mr-2 h-4 w-4" />
@@ -97,9 +97,9 @@ export default function InvoiceUploadPage() {
           </div>
 
           {file && (
-            <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center gap-3">
-              <FileText className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium truncate">{file.name}</span>
+            <div className="p-2 md:p-3 rounded-lg bg-primary/5 border border-primary/10 flex items-center gap-2 md:gap-3">
+              <FileText className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+              <span className="text-xs md:text-sm font-medium truncate flex-1">{file.name}</span>
               <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)}KB</span>
             </div>
           )}
@@ -130,14 +130,14 @@ export default function InvoiceUploadPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <Card className="border-none shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-500" />
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-green-500" />
                 Datos extraídos
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="p-4 md:p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 {[
                   { label: 'Fecha', value: extracted.fecha },
                   { label: 'Cliente', value: extracted.cliente },
@@ -150,11 +150,11 @@ export default function InvoiceUploadPage() {
                 ].map((item) => (
                   <div key={item.label} className="space-y-1">
                     <p className="text-xs text-muted-foreground">{item.label}</p>
-                    <p className="text-sm font-medium">{item.value || '-'}</p>
+                    <p className="text-xs md:text-sm font-medium">{item.value || '-'}</p>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-4">
+              <p className="text-xs text-muted-foreground mt-3 md:mt-4">
                 Confianza: {(extracted.confidence * 100).toFixed(0)}%
               </p>
             </CardContent>

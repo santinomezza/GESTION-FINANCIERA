@@ -65,7 +65,7 @@ export default function DashboardLayout({
 
       {/* Main Content */}
       <main className="flex-1 lg:ml-[17rem] min-h-screen relative z-10">
-        <div className="p-4 sm:p-5 lg:p-7 xl:p-8 max-w-[1600px] mx-auto">
+        <div className="p-3 sm:p-4 lg:p-6 xl:p-8 max-w-[1600px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
