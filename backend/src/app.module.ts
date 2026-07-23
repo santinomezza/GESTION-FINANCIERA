@@ -29,6 +29,7 @@ import { ExchangeRatesModule } from './exchange-rates/exchange-rates.module';
 import { WorkspaceMembersModule } from './workspace-members/workspace-members.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { AIRecommendationsModule } from './ai-recommendations/ai-recommendations.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { AIRecommendationsModule } from './ai-recommendations/ai-recommendations
     WorkspaceMembersModule,
     InvitationsModule,
     AIRecommendationsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [

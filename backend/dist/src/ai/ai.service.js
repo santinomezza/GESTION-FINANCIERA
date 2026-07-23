@@ -257,7 +257,31 @@ Responde SOLO con el texto, sin markdown ni estructura JSON.`;
         if (text.includes('cuenta') || text.includes('vincula')) {
             return 'Para vincular tu cuenta:\n1. Abri GESTIONAR2 en web\n2. Fijate en Configuración -> Telegram\n3. Copiá tu ID de usuario\n4. En Telegram mandame: "ID: tu_id_aqui"';
         }
-        return '¡Hola! Soy tu asistente de GESTIONAR2. Puedo ayudarte con:\n\n📊 Consultas financieras\n📝 Registro de gastos/ingresos\n📄 Facturas y comprobantes\n🧮 Division de gastos\n🔧 Problemas técnicos\n\nEscribi tu duda y te ayudo a resolverla!';
+        if (text.includes('categoría') || text.includes('categoria')) {
+            return 'Para crear categorías:\n1. Escribí un gasto o ingreso\n2. Cuando te pida categoría, seleccioná "➕ Nueva categoría"\n3. Escribí el nombre de la categoría\n4. La categoría se creará automáticamente';
+        }
+        if (text.includes('dividir') || text.includes('división')) {
+            return 'Para dividir gastos:\n1. Usá el comando /dividir\n2. Escribí en formato: "Persona1: monto, Persona2: monto"\n3. Ejemplo: "Santiago: 15000, María: 8000, Juan: 22000"\n4. El bot calculará quién le debe a quién';
+        }
+        if (text.includes('balance') || text.includes('resumen')) {
+            return 'Para ver tu balance:\n1. Usá el botón "📊 Balance" del menú\n2. Verás ingresos, gastos y balance del mes\n3. También podés ver últimos gastos e ingresos\n4. Usá /modo para cambiar de espacio de trabajo';
+        }
+        if (text.includes('voz') || text.includes('audio') || text.includes('transcribir')) {
+            return 'Para usar asistencia por voz:\n1. Enviá un audio con tu gasto/ingreso\n2. Ejemplo: "Gasté 15000 en nafta"\n3. El bot transcribirá y procesará automáticamente\n4. Te pedirá confirmación antes de registrar';
+        }
+        if (text.includes('ayuda') || text.includes('help') || text.includes('comandos')) {
+            return 'Comandos disponibles:\n/start - Vincular cuenta\n/ayuda - Ver ayuda\n/modo - Cambiar espacio de trabajo\n/dividir - Dividir gastos\n\nEscribí tu consulta y te respondo!';
+        }
+        if (text.includes('modo') || text.includes('workspace') || text.includes('espacio')) {
+            return 'Para cambiar de modo:\n1. Usá el comando /modo\n2. Seleccioná entre Personal o Empresarial\n3. Elegí el espacio de trabajo\n4. Podés tener múltiples espacios de trabajo';
+        }
+        if (text.includes('ingreso') || text.includes('cobré') || text.includes('cobro')) {
+            return 'Para registrar ingresos:\n1. Escribí: "Cobré 50000 de cliente"\n2. El bot detectará que es un ingreso\n3. Seleccioná la categoría\n4. Confirmá el registro';
+        }
+        if (text.includes('ahorrar') || text.includes('ahorro') || text.includes('consejos')) {
+            return 'Consejos para ahorrar:\n1. Registrá todos tus gastos diariamente\n2. Usá categorías para identificar gastos hormiga\n3. Establecé límites por categoría\n4. Revisá tu balance semanalmente\n5. Separá ahorros automáticamente';
+        }
+        return '¡Hola! Soy tu asistente de GESTIONAR2. Puedo ayudarte con:\n\n📊 Consultas financieras y balances\n📝 Registro de gastos e ingresos\n📄 Facturas y comprobantes\n🧮 División de gastos\n🔧 Problemas técnicos\n💡 Consejos de ahorro\n🎤 Asistencia por voz\n\nEscribí tu duda y te ayudo a resolverla!';
     }
 };
 exports.AiService = AiService;

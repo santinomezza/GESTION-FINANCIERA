@@ -200,14 +200,31 @@ let TelegramService = TelegramService_1 = class TelegramService {
         });
         this.bot.callbackQuery('btn_ai_help', async (ctx) => {
             await ctx.answerCallbackQuery();
-            await ctx.reply('💬 *Asistencia Inteligente*\n\n' +
-                'Escribí tu duda, problema o consulta y te ayudaré a resolverla.\n\n' +
-                'Ejemplos:\n' +
-                '• "No me registra los gastos"\n' +
+            await ctx.reply('💬 *Asistencia Inteligente GESTIONAR2*\n\n' +
+                'Soy tu asistente financiero personal. Puedo ayudarte con:\n\n' +
+                '*📝 Registro de movimientos:*\n' +
+                '• "Gasté 15000 en nafta"\n' +
+                '• "Cobré 50000 de cliente"\n' +
+                '• "Pagué 8000 de luz"\n\n' +
+                '*📄 Facturas y comprobantes:*\n' +
                 '• "¿Cómo subo una factura?"\n' +
-                '• "Mi balance no actualiza"\n' +
-                '• "Consejos para ahorrar"\n\n' +
-                'Escribí tu consulta y te respondo!', { parse_mode: 'Markdown' });
+                '• "No puedo escanear facturas"\n' +
+                '• "Extraer datos de factura"\n\n' +
+                '*📊 Consultas financieras:*\n' +
+                '• "¿Cuál es mi balance?"\n' +
+                '• "Consejos para ahorrar"\n' +
+                '• "Cómo reducir gastos"\n\n' +
+                '*🔧 Problemas técnicos:*\n' +
+                '• "No me registra los gastos"\n' +
+                '• "El bot no responde"\n' +
+                '• "Error al conectar Telegram"\n\n' +
+                '*🧮 División de gastos:*\n' +
+                '• "Dividir gastos entre amigos"\n' +
+                '• "Cómo usar /dividir"\n\n' +
+                '*💡 Categorías y organización:*\n' +
+                '• "Crear categorías"\n' +
+                '• "Organizar mis gastos"\n\n' +
+                'Escribí tu consulta y te respondo de inmediato!', { parse_mode: 'Markdown' });
         });
         this.bot.callbackQuery('main_menu', async (ctx) => {
             await this.handleMainMenu(ctx);

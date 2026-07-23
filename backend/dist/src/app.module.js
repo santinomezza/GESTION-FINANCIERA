@@ -37,6 +37,7 @@ const exchange_rates_module_1 = require("./exchange-rates/exchange-rates.module"
 const workspace_members_module_1 = require("./workspace-members/workspace-members.module");
 const invitations_module_1 = require("./invitations/invitations.module");
 const ai_recommendations_module_1 = require("./ai-recommendations/ai-recommendations.module");
+const reports_module_1 = require("./reports/reports.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -67,6 +68,7 @@ exports.AppModule = AppModule = __decorate([
             workspace_members_module_1.WorkspaceMembersModule,
             invitations_module_1.InvitationsModule,
             ai_recommendations_module_1.AIRecommendationsModule,
+            reports_module_1.ReportsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
