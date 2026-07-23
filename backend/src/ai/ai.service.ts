@@ -61,14 +61,17 @@ export class AiService {
                 {
                   text: `Analiza este documento de factura argentina y extrae SOLO en formato JSON válido estos campos:
                     - fecha (formato ISO: YYYY-MM-DD, ej: "2025-01-22")
-                    - razon_social (nombre del emisor)
-                    - cuit (formato: XX-XXXXXXXX-X)
+                    - razon_social (nombre del cliente o comprador, NO del emisor)
+                    - cuit (CUIT del cliente, formato: XX-XXXXXXXX-X)
                     - numero_ticket (número completo de comprobante, ej: "00002-00002747")
                     - importe_neto (número decimal, usar punto como separador decimal, sin separador de miles)
                     - iva_21 (número decimal, usar punto como separador decimal)
                     - total (número decimal, usar punto como separador decimal)
 
-                    Importante: La fecha debe estar en formato YYYY-MM-DD. Si no puedes determinar la fecha, devuelve null.
+                    Importante: 
+                    - razon_social debe ser el nombre del CLIENTE (comprador), NO del emisor de la factura
+                    - Busca en campos como "Apellido y Nombre / Razón Social" o similares
+                    - La fecha debe estar en formato YYYY-MM-DD. Si no puedes determinar la fecha, devuelve null.
                     Responde SOLO con el JSON, sin markdown ni explicaciones.`,
                 },
                 {
@@ -120,11 +123,12 @@ export class AiService {
     }
 
     const fecha = this.parseDate(parsed.fecha);
+    const razonSocial = this.cleanRazonSocial(parsed.razon_social);
     return {
       fecha: fecha,
-      cliente: parsed.razon_social || null,
+      cliente: razonSocial,
       cuit: parsed.cuit || null,
-      razonSocial: parsed.razon_social || null,
+      razonSocial: razonSocial,
       numeroTicket: parsed.numero_ticket || null,
       neto: parsed.importe_neto ? parseFloat(parsed.importe_neto) : null,
       ivaPorcentaje: parsed.iva_21 ? 21 : null,
@@ -133,6 +137,25 @@ export class AiService {
       confidence: 0.85,
       rawText: JSON.stringify(parsed),
     };
+  }
+
+  private cleanRazonSocial(value: string | null | undefined): string | null {
+    if (!value) return null;
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const patterns = [
+      /^Apellido\s+y\s+Nombre\s*\/\s*Raz[oó]n\s+Social\s*:\s*/i,
+      /^Raz[oó]n\s+Social\s*:\s*/i,
+      /^Apellido\s+y\s+Nombre\s*:\s*/i,
+      /^Cliente\s*:\s*/i,
+      /^Nombre\s*:\s*/i,
+    ];
+    let cleaned = trimmed;
+    for (const pattern of patterns) {
+      cleaned = cleaned.replace(pattern, '');
+    }
+    cleaned = cleaned.trim();
+    return cleaned || trimmed;
   }
 
   private parseDate(dateStr: string | null): string | null {
@@ -259,23 +282,23 @@ Responde SOLO con el texto, sin markdown ni estructura JSON.`;
 
   private getFallbackAdvice(message: string, context: any): string {
     const text = message.toLowerCase();
-    
+
     if (text.includes('no conecta') || text.includes('error') || text.includes('falla')) {
       return 'Si tenés problemas de conexión, probá:\n1. Revisar que el botón de Telegram esté conectado\n2. Reiniciar la app\n3. Usar /start para re-vincular tu cuenta';
     }
-    
+
     if (text.includes('gasto') && text.includes('no registra')) {
       return 'Si no se registra un gasto:\n1. Asegurate de tener un espacio de trabajo activo (usá /modo)\n2. Escribi el gasto con texto libre: "Gasté 5000 en nafta"\n3. Si usás categorías, verificá que existan en tu espacio';
     }
-    
+
     if (text.includes('factura') && text.includes('no sube')) {
       return 'Para subir facturas:\n1. Asegurate de estar en modo Empresarial (/modo)\n2. Enviá la foto del documento\n3. El bot tiene 60 segundos para procesarla\n4. Si falla, envia el PDF directamente';
     }
-    
+
     if (text.includes('cuenta') || text.includes('vincula')) {
       return 'Para vincular tu cuenta:\n1. Abri GESTIONAR2 en web\n2. Fijate en Configuración -> Telegram\n3. Copiá tu ID de usuario\n4. En Telegram mandame: "ID: tu_id_aqui"';
     }
-    
+
     return '¡Hola! Soy tu asistente de GESTIONAR2. Puedo ayudarte con:\n\n📊 Consultas financieras\n📝 Registro de gastos/ingresos\n📄 Facturas y comprobantes\n🧮 Division de gastos\n🔧 Problemas técnicos\n\nEscribi tu duda y te ayudo a resolverla!';
   }
 }

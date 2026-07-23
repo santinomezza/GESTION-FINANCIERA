@@ -45,14 +45,17 @@ let AiService = AiService_1 = class AiService {
                             {
                                 text: `Analiza este documento de factura argentina y extrae SOLO en formato JSON válido estos campos:
                     - fecha (formato ISO: YYYY-MM-DD, ej: "2025-01-22")
-                    - razon_social (nombre del emisor)
-                    - cuit (formato: XX-XXXXXXXX-X)
+                    - razon_social (nombre del cliente o comprador, NO del emisor)
+                    - cuit (CUIT del cliente, formato: XX-XXXXXXXX-X)
                     - numero_ticket (número completo de comprobante, ej: "00002-00002747")
                     - importe_neto (número decimal, usar punto como separador decimal, sin separador de miles)
                     - iva_21 (número decimal, usar punto como separador decimal)
                     - total (número decimal, usar punto como separador decimal)
 
-                    Importante: La fecha debe estar en formato YYYY-MM-DD. Si no puedes determinar la fecha, devuelve null.
+                    Importante: 
+                    - razon_social debe ser el nombre del CLIENTE (comprador), NO del emisor de la factura
+                    - Busca en campos como "Apellido y Nombre / Razón Social" o similares
+                    - La fecha debe estar en formato YYYY-MM-DD. Si no puedes determinar la fecha, devuelve null.
                     Responde SOLO con el JSON, sin markdown ni explicaciones.`,
                             },
                             {
@@ -99,11 +102,12 @@ let AiService = AiService_1 = class AiService {
             throw new Error('No se pudo interpretar la respuesta del servicio de extracción');
         }
         const fecha = this.parseDate(parsed.fecha);
+        const razonSocial = this.cleanRazonSocial(parsed.razon_social);
         return {
             fecha: fecha,
-            cliente: parsed.razon_social || null,
+            cliente: razonSocial,
             cuit: parsed.cuit || null,
-            razonSocial: parsed.razon_social || null,
+            razonSocial: razonSocial,
             numeroTicket: parsed.numero_ticket || null,
             neto: parsed.importe_neto ? parseFloat(parsed.importe_neto) : null,
             ivaPorcentaje: parsed.iva_21 ? 21 : null,
@@ -112,6 +116,26 @@ let AiService = AiService_1 = class AiService {
             confidence: 0.85,
             rawText: JSON.stringify(parsed),
         };
+    }
+    cleanRazonSocial(value) {
+        if (!value)
+            return null;
+        const trimmed = value.trim();
+        if (!trimmed)
+            return null;
+        const patterns = [
+            /^Apellido\s+y\s+Nombre\s*\/\s*Raz[oó]n\s+Social\s*:\s*/i,
+            /^Raz[oó]n\s+Social\s*:\s*/i,
+            /^Apellido\s+y\s+Nombre\s*:\s*/i,
+            /^Cliente\s*:\s*/i,
+            /^Nombre\s*:\s*/i,
+        ];
+        let cleaned = trimmed;
+        for (const pattern of patterns) {
+            cleaned = cleaned.replace(pattern, '');
+        }
+        cleaned = cleaned.trim();
+        return cleaned || trimmed;
     }
     parseDate(dateStr) {
         if (!dateStr)
