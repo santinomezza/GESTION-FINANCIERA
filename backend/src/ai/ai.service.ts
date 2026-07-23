@@ -75,15 +75,75 @@ export class AiService {
       this.logger.log('Procesando PDF con extracción local...');
       result = await this.extractInvoiceLocally(fileBuffer, mimeType);
     } else if (mimeType.startsWith('image/')) {
-      // Imágenes: usar Gemini directamente (como antes)
-      this.logger.log('Procesando imagen con Gemini...');
-      result = await this.extractInvoiceWithGemini(fileBuffer, mimeType);
+      // Imágenes: convertir a PDF primero, luego extraer localmente (sin límites)
+      this.logger.log('Convirtiendo imagen a PDF...');
+      const pdfBuffer = await this.convertImageToPDF(fileBuffer, mimeType);
+      this.logger.log('Procesando PDF convertido con extracción local...');
+      result = await this.extractInvoiceLocally(pdfBuffer, 'application/pdf');
     } else {
       throw new Error('Tipo de archivo no soportado');
     }
 
     await this.setCachedExtraction(cacheKey, result, 3600);
     return result;
+  }
+
+  private async convertImageToPDF(imageBuffer: Buffer, mimeType: string): Promise<Buffer> {
+    try {
+      const { PDFDocument, rgb } = require('pdf-lib');
+      const pdfDoc = await PDFDocument.create();
+
+      // Convertir buffer de imagen a formato compatible
+      let imageBufferConverted = imageBuffer;
+
+      // Si es PNG, convertir a JPEG para mejor compatibilidad
+      if (mimeType === 'image/png') {
+        // pdf-lib puede manejar PNG directamente
+      }
+
+      // Embed image
+      let image;
+      if (mimeType === 'image/png') {
+        image = await pdfDoc.embedPng(imageBuffer);
+      } else if (mimeType === 'image/jpeg' || mimeType === 'image/jpg') {
+        image = await pdfDoc.embedJpg(imageBuffer);
+      } else {
+        throw new Error('Formato de imagen no soportado para conversión a PDF');
+      }
+
+      // Get image dimensions
+      const imageWidth = image.width();
+      const imageHeight = image.height();
+
+      // A4 page dimensions (portrait)
+      const a4Width = 595.28;
+      const a4Height = 841.89;
+
+      // Calculate scaling to fit A4
+      const scale = Math.min(a4Width / imageWidth, a4Height / imageHeight);
+      const scaledWidth = imageWidth * scale;
+      const scaledHeight = imageHeight * scale;
+
+      // Center the image on the page
+      const x = (a4Width - scaledWidth) / 2;
+      const y = (a4Height - scaledHeight) / 2;
+
+      // Add page and embed image
+      const page = pdfDoc.addPage([a4Width, a4Height]);
+      page.drawImage(image, {
+        x: x,
+        y: y,
+        width: scaledWidth,
+        height: scaledHeight,
+      });
+
+      // Save PDF
+      const pdfBytes = await pdfDoc.save();
+      return Buffer.from(pdfBytes);
+    } catch (error) {
+      this.logger.error('Error convirtiendo imagen a PDF:', error);
+      throw new Error('No se pudo convertir la imagen a PDF');
+    }
   }
 
   private async extractWithAdvancedAI(fileBuffer: Buffer, mimeType: string): Promise<ExtractedInvoice> {
@@ -292,7 +352,8 @@ export class AiService {
   private async extractTextFromPDF(buffer: Buffer): Promise<string> {
     try {
       const pdfParse = require('pdf-parse');
-      const data = await pdfParse.default ? pdfParse.default(buffer) : pdfParse(buffer);
+      const pdfParseFn = pdfParse.default || pdfParse;
+      const data = await pdfParseFn(buffer);
       return data.text;
     } catch (error) {
       this.logger.error('Error parseando PDF:', error);

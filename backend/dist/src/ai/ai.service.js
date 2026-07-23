@@ -57,14 +57,57 @@ let AiService = AiService_1 = class AiService {
             result = await this.extractInvoiceLocally(fileBuffer, mimeType);
         }
         else if (mimeType.startsWith('image/')) {
-            this.logger.log('Procesando imagen con Gemini...');
-            result = await this.extractInvoiceWithGemini(fileBuffer, mimeType);
+            this.logger.log('Convirtiendo imagen a PDF...');
+            const pdfBuffer = await this.convertImageToPDF(fileBuffer, mimeType);
+            this.logger.log('Procesando PDF convertido con extracción local...');
+            result = await this.extractInvoiceLocally(pdfBuffer, 'application/pdf');
         }
         else {
             throw new Error('Tipo de archivo no soportado');
         }
         await this.setCachedExtraction(cacheKey, result, 3600);
         return result;
+    }
+    async convertImageToPDF(imageBuffer, mimeType) {
+        try {
+            const { PDFDocument, rgb } = require('pdf-lib');
+            const pdfDoc = await PDFDocument.create();
+            let imageBufferConverted = imageBuffer;
+            if (mimeType === 'image/png') {
+            }
+            let image;
+            if (mimeType === 'image/png') {
+                image = await pdfDoc.embedPng(imageBuffer);
+            }
+            else if (mimeType === 'image/jpeg' || mimeType === 'image/jpg') {
+                image = await pdfDoc.embedJpg(imageBuffer);
+            }
+            else {
+                throw new Error('Formato de imagen no soportado para conversión a PDF');
+            }
+            const imageWidth = image.width();
+            const imageHeight = image.height();
+            const a4Width = 595.28;
+            const a4Height = 841.89;
+            const scale = Math.min(a4Width / imageWidth, a4Height / imageHeight);
+            const scaledWidth = imageWidth * scale;
+            const scaledHeight = imageHeight * scale;
+            const x = (a4Width - scaledWidth) / 2;
+            const y = (a4Height - scaledHeight) / 2;
+            const page = pdfDoc.addPage([a4Width, a4Height]);
+            page.drawImage(image, {
+                x: x,
+                y: y,
+                width: scaledWidth,
+                height: scaledHeight,
+            });
+            const pdfBytes = await pdfDoc.save();
+            return Buffer.from(pdfBytes);
+        }
+        catch (error) {
+            this.logger.error('Error convirtiendo imagen a PDF:', error);
+            throw new Error('No se pudo convertir la imagen a PDF');
+        }
     }
     async extractWithAdvancedAI(fileBuffer, mimeType) {
         if (this.openaiKey) {
@@ -255,7 +298,8 @@ let AiService = AiService_1 = class AiService {
     async extractTextFromPDF(buffer) {
         try {
             const pdfParse = require('pdf-parse');
-            const data = await pdfParse.default ? pdfParse.default(buffer) : pdfParse(buffer);
+            const pdfParseFn = pdfParse.default || pdfParse;
+            const data = await pdfParseFn(buffer);
             return data.text;
         }
         catch (error) {

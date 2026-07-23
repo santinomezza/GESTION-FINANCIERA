@@ -29,6 +29,7 @@ export declare class AiService {
     private anthropicKey;
     constructor(config: ConfigService);
     extractInvoice(fileBuffer: Buffer, mimeType: string): Promise<ExtractedInvoice>;
+    private convertImageToPDF;
     private extractWithAdvancedAI;
     private extractWithOpenAI;
     private extractWithAnthropic;
